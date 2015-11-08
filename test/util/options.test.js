@@ -2,7 +2,8 @@ import {Options} from "../../src/js/util/options"
 var should = require("should")
 
 export function run() {
-    describe("options", () => {
+
+    describe("Options", function() {
 
         var opts = {
             key1: "val1",
@@ -21,37 +22,47 @@ export function run() {
 
         var o = new Options(opts)
 
-        describe("#get", () => {
-            it("should return value for plain key value option", () => {
+        describe("#get", function() {
+
+            it("should return value for plain value", function() {
                 o.get("key1").should.be.exactly("val1")
             })
-            it("callback should be called with value for plain key value option", () => {
+
+            it("callback should be called with value for plain value", function() {
                 let result, callback = v => {
                     result = v
                 }
                 should(o.get("key1", callback)).be.undefined
                 should(result).be.exactly("val1")
             })
-            it("should return value for function key value option", () => {
+
+            it("should return value for function value", function() {
                 o.get("key2").should.be.equal("val2")
             })
-            it("callback should be called with value for function key value option", () => {
+
+            it("callback should be called with value for function value", function() {
                 let result, callback = v => {
                     result = v
                 }
                 should(o.get("key2", callback)).be.undefined
                 should(result).be.exactly("val2")
             })
-            it("should return undefined for function with done key value option", () => {
+
+            it("should return undefined for function value with done", function() {
                 should(o.get("key3")).be.undefined
             })
-            it("callback should be called with value for function with done key value option", done => {
+
+            it("callback should be called with value for function value with done", function(done) {
+                this.timeout(1100)
+                let start = Date.now()
                 o.get("key3", v => {
-                    (v).should.be.exactly("val3")
+                    (Date.now() - start).should.be.approximately(1000, 20)
+                    should(v).be.exactly("val3")
                     done()
                 })
             })
-            it("should return value for nested key value option", () => {
+
+            it("should return value for nested value", function() {
                 should(o.get("key4.key5")).be.exactly("val5")
             })
         })

@@ -72,7 +72,7 @@ export class Queue {
                         this._next()
                     }
                 }, fire = () => {
-                    this._handler.apply(window, [next.item, done])
+                    this._handler.apply(this, [next.item, done])
                 }
                 this._working.push(id)
                 if (this._delay) {
