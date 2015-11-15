@@ -26,9 +26,13 @@ export function run() {
     GLOBAL.XMLHttpRequest = class XMLHttpRequest {
         constructor() {
             this.upload = {
-                addEventListener: function () {
+                addEventListener: function (name, func) {
+                    if (name == "progress") {
+                        GLOBAL._XMLHttpRequest_event = func
+                    }
                 }
             }
+            GLOBAL._current_XMLHttpRequest = this
         }
 
         open(method, url, async) {
@@ -94,6 +98,58 @@ export function run() {
             should(request.url).be.exactly("/test")
             should(request.async).be.true
             should(request.headers["Content-Type"]).be.exactly("multipart/form-data")
+        })
+
+        it("should trigger done handler on success", function() {
+            let called = false, times = 0
+            new Http("/text").done(() => {called = "done"; times++}).fail(() => {called = "fail"; times++})
+            should(GLOBAL._current_XMLHttpRequest.onreadystatechange).be.a.function
+            GLOBAL._current_XMLHttpRequest.readyState = 4
+            GLOBAL._current_XMLHttpRequest.status = 200
+            GLOBAL._current_XMLHttpRequest.response = "{\"success\":true}"
+            GLOBAL._current_XMLHttpRequest.onreadystatechange()
+            called.should.be.exactly("done")
+            times.should.be.exactly(1)
+        })
+
+        it("should trigger fail handler on success but response parse error", function() {
+            let called = false, times = 0
+            new Http("/text").done(() => {called = "done"; times++}).fail(() => {called = "fail"; times++})
+            should(GLOBAL._current_XMLHttpRequest.onreadystatechange).be.a.function
+            GLOBAL._current_XMLHttpRequest.readyState = 4
+            GLOBAL._current_XMLHttpRequest.status = 200
+            GLOBAL._current_XMLHttpRequest.response = "{success:true"
+            GLOBAL._current_XMLHttpRequest.onreadystatechange()
+            called.should.be.exactly("fail")
+            times.should.be.exactly(1)
+        })
+
+        it("should trigger fail handler on unsuccessful response", function() {
+            let called = false, times = 0
+            new Http("/text").done(() => {called = "done"; times++}).fail(() => {called = "fail"; times++})
+            should(GLOBAL._current_XMLHttpRequest.onreadystatechange).be.a.function
+            GLOBAL._current_XMLHttpRequest.readyState = 4
+            GLOBAL._current_XMLHttpRequest.status = 404
+            GLOBAL._current_XMLHttpRequest.onreadystatechange()
+            called.should.be.exactly("fail")
+            times.should.be.exactly(1)
+        })
+
+        it("should trigger progress handler on upload progress update", function() {
+            let called = false, times = 0, progress = 0
+            new Http("/text").done(() => {called = "done"; times++}).fail(() => {called = "fail"; times++}).progress(e => progress = e)
+            should(GLOBAL._XMLHttpRequest_event).be.a.function
+            called.should.be.false
+            times.should.be.exactly(0)
+
+            GLOBAL._XMLHttpRequest_event({loaded:40,total:200})
+            progress.should.be.exactly(20)
+
+            GLOBAL._XMLHttpRequest_event({loaded:1145,total:6678})
+            progress.should.be.exactly(18)
+
+            GLOBAL._XMLHttpRequest_event({loaded:3512,total:3973})
+            progress.should.be.exactly(89)
         })
     })
 }

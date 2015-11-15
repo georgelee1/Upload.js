@@ -120,7 +120,7 @@ export class Http {
         }
 
         request.upload.addEventListener("progress", e => {
-            this._progress(Math.ceil(e.loaded / e.total) * 100)
+            this._progress(Math.ceil((e.loaded / e.total) * 100))
         }, false);
 
         request.open("POST", this._url, true);
