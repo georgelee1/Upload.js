@@ -1,6 +1,25 @@
 import {Cache} from "./cache"
 
 /**
+ * Simple util function that calls the callback for every element with the element as the
+ * only parameter. Determines if the passed element type is an Array, DOMList or single element.
+ *
+ * @param ele The element(s)
+ * @param callback The callback function
+ */
+function every(ele, callback) {
+    let elements = []
+    if (Array.isArray(ele)) {
+        elements = ele
+    } else if (Array.isArray(ele.items)) {
+        elements = ele.items
+    } else {
+        elements.push(ele)
+    }
+    elements.forEach(callback)
+}
+
+/**
  * Returns a matcher function that tests if the DOM element is of the passed type
  *
  * @param type The element node type
@@ -21,6 +40,28 @@ export function type(type) {
 export function css(css) {
     return ele => {
         return (ele.className || "").split(" ").indexOf(css) >= 0
+    }
+}
+
+/**
+ * Takes a single or list of matcher functions. Returns a function that takes an HTML DOM element and returns true if
+ * all matchers return True for the passed element or any parent up to the root of that element.
+ *
+ * @see {@link css}
+ * @see {@link type}
+ * @param matchers Single or list of matcher functions
+ * @returns {Function} The function to perform the checks
+ */
+export function matchesOrChild(...matchers) {
+    return ele => {
+        let current = ele
+        while (current) {
+            if (matchers.every(matcher => { return matcher(current) })) {
+                return true
+            }
+            current = current.parentNode
+        }
+        return false
     }
 }
 
@@ -52,12 +93,15 @@ export function matches(...matchers) {
  */
 export function children(...matchers) {
     return ele => {
-        let children = ele.childNodes, matched = []
-        for (let x = 0, len = children.length; x < len; x++) {
-            if (children[x].nodeType === 1 && matchers.every(matcher => matcher(children[x]))) {
-                matched.push(children[x])
+        let matched = []
+        every(ele, e => {
+            let children = e.childNodes
+            for (let x = 0, len = children.length; x < len; x++) {
+                if (children[x].nodeType === 1 && matchers.every(matcher => matcher(children[x]))) {
+                    matched.push(children[x])
+                }
             }
-        }
+        })
         return matched
     }
 }
@@ -71,10 +115,12 @@ export function children(...matchers) {
  * @param handler The handler that is called for the event
  */
 export function on(ele, event, matcher, handler) {
-    ele.addEventListener(event, event => {
-        if (matcher(event.target)) {
-            handler(event)
-        }
+    every(ele, e => {
+        e.addEventListener(event, event => {
+            if (matcher(event.target)) {
+                handler(event)
+            }
+        })
     })
 }
 
@@ -86,29 +132,31 @@ export function on(ele, event, matcher, handler) {
  * cls("test2", false)(ele)(ele2)
  *
  * @param {string} cls The class name to add
- * @param {boolean} add True to add or False to remove the class 
+ * @param {boolean} add True to add or False to remove the class
  * @returns {Function} The class adding function
  */
-export function cls(cls, add=true) {
-    let funct = ele => {
-        let classes = !!ele.className ? ele.className.split(" ") : [];
-        if (add) {
-           classes.push(cls)
-        } else {
-           let index = classes.indexOf(cls)
-           if (index >= 0) {
-              classes.splice(index, 1)
-           }
-        }
-        ele.className = classes.join(" ")
-        return funct
+export function cls(cls, add = true) {
+    let func = elements => {
+        every(elements, ele => {
+            let classes = !!ele.className ? ele.className.split(" ") : [];
+            if (add) {
+                classes.push(cls)
+            } else {
+                let index = classes.indexOf(cls)
+                if (index >= 0) {
+                    classes.splice(index, 1)
+                }
+            }
+            ele.className = classes.join(" ")
+        })
+        return func
     }
-    return funct
+    return func
 }
 
 /**
  * Returns a transformation function that sets the passed attributes on to the elements passed to the subsequently called function
- * 
+ *
  * Usage:
  * attr("test", "val")(ele) // add
  * attr("test", "val")(ele)(ele2) // add
@@ -119,25 +167,27 @@ export function cls(cls, add=true) {
  * attr("test")(ele) // remove
  */
 export function attr(key, val) {
-    let funct = ele => {
-        if (typeof key === "object") {
-            Object.keys(key).forEach(k => {
-                if (typeof key[k] === "undefined") {
-                    ele.removeAttribute(k)
-                } else {
-                    ele.setAttribute(k, key[k])
-                }
-            })
-        } else {
-            if (typeof val === "undefined") {
-                ele.removeAttribute(key)
+    let func = elements => {
+        every(elements, ele => {
+            if (typeof key === "object") {
+                Object.keys(key).forEach(k => {
+                    if (typeof key[k] === "undefined") {
+                        ele.removeAttribute(k)
+                    } else {
+                        ele.setAttribute(k, key[k])
+                    }
+                })
             } else {
-                ele.setAttribute(key, val)
+                if (typeof val === "undefined") {
+                    ele.removeAttribute(key)
+                } else {
+                    ele.setAttribute(key, val)
+                }
             }
-        }
-        return funct
+        })
+        return func
     }
-    return funct
+    return func
 }
 
 /**
@@ -236,54 +286,58 @@ export class SimpleDOMParser {
 
 /**
  * The DOM List is a wrapper around a list of DOM elements that allow easy modification of the wrapped DOM elements.
- * 
+ *
  * Usage:
  * let list = new DOMList([dom1, dom2])
  * list.apply(cls("test"), attr("test", "val")).appendTo(parent) // functions can be chained
  * list.items // access to array of elements
  * list.clone() // returns a list of deep cloned node
- * 
+ *
  * @class
  */
 export class DOMList {
-   constructor(doms=[]) {
-      this.items = doms
-   }
-   
-   /**
-    * Returns a new DOMList with all wrapped elements cloned deeply
-    */
-   clone() {
-       let cloned = []
-       this.items.forEach(ele => {
-           cloned.push(ele.cloneNode(true))
-       })
-       return new DOMList(cloned)
-   }
-   
-   /**
-    * Apply the passed transformation functions to the DOM elements within this DOMList
-    * 
-    * @param {function} Single or list of transformation functions such as #css, #attr
-    */
-   apply(...actions) {
-      actions.forEach(action => {
-          this.items.forEach(ele => {
-              action(ele)
-          })
-      })
-      return this
-   }
-   
-   /**
-    * Append the DOM elements within this DOMList to the passed parent DOM element
-    * 
-    * @param The parent DOM element to append to
-    */
-   appendTo(parent) {
-       this.items.forEach(ele => {
-           parent.appendChild(ele)
-       })
-       return this
-   }
+    constructor(doms = []) {
+        this.items = doms
+    }
+
+    /**
+     * Returns a new DOMList with all wrapped elements cloned deeply
+     */
+    clone() {
+        let cloned = []
+        this.items.forEach(ele => {
+            cloned.push(ele.cloneNode(true))
+        })
+        return new DOMList(cloned)
+    }
+
+    /**
+     * Apply the passed transformation functions to the DOM elements within this DOMList
+     *
+     * @param {function} actions Single or list of transformation functions such as #css, #attr
+     */
+    apply(...actions) {
+        actions.forEach(action => {
+            this.items.forEach(ele => {
+                action(ele)
+            })
+        })
+        return this
+    }
+
+    /**
+     * Append the DOM elements within this DOMList to the passed parent DOM element
+     *
+     * @param parent The parent DOM element to append to
+     */
+    appendTo(parent) {
+        let p = parent
+        if (Array.isArray(p)) {
+            p = parent[0]
+        }
+        this.items.forEach(ele => {
+            p.appendChild(ele)
+        })
+        return this
+    }
 }
