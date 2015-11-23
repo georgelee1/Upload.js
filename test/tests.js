@@ -4,8 +4,8 @@ import {run as http} from "./util/http.test"
 import {run as dom} from "./util/dom.test"
 import {run as cache} from "./util/cache.test"
 
-//options()
-//queue()
-//http()
+options()
+queue()
+http()
 dom()
-//cache()
+cache()

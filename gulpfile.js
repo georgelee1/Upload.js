@@ -1,4 +1,5 @@
 var p = require("./package.json")
+var fs = require('fs');
 var gulp = require("gulp");
 var browserify = require("browserify");
 var babelify = require("babelify");
@@ -8,26 +9,44 @@ var uglify = require("gulp-uglify");
 var transpile  = require('gulp-es6-module-transpiler');
 var mocha = require("gulp-mocha");
 var babel = require("gulp-babel");
+var header = require("gulp-header");
+var sass = require('gulp-sass');
+var autoprefixer = require('gulp-autoprefixer');
+var rename = require("gulp-rename");
 
-gulp.task("dist", function () {
+function errored(err) {
+    console.error(err);
+    this.emit("end");
+}
+
+var fileHeader = "/** Upload.js (${version}) | ${homepage} | ${license} */";
+
+gulp.task("script", function() {
     return browserify({entries: "./src/js/upload.js", extensions: [".js"], debug: true})
         .transform(babelify, {presets: ["es2015"]})
         .bundle()
-        .on("error", function (err) {
-            console.error(err);
-            this.emit("end");
-        })
+        .on("error", errored)
         .pipe(source("upload-" + p.version + ".js"))
         .pipe(buffer())
         .pipe(uglify())
+        .pipe(header(fileHeader, p))
         .pipe(gulp.dest("dist"));
-});
+})
 
-gulp.task("watch", ["build"], function () {
-    gulp.watch("**/*.js", ["build"]);
-});
+gulp.task("style", function() {
+    return gulp.src("src/css/*.scss")
+        .pipe(sass({
+            outputStyle: "compressed"
+         }).on("error", errored))
+        .pipe(autoprefixer())
+        .pipe(rename("upload-" + p.version + ".css"))
+        .pipe(header(fileHeader, p))
+        .pipe(gulp.dest("dist"));
+})
 
-gulp.task("build", function () {
+gulp.task("dist", ["script", "style"], function () {});
+
+gulp.task("build-test", function () {
     return gulp.src("test/tests.js")
         .pipe(transpile({
             formatter: "bundle"
@@ -38,7 +57,7 @@ gulp.task("build", function () {
         .pipe(gulp.dest("build"));
 });
 
-gulp.task("test", ["build"], function () {
+gulp.task("test", ["build-test"], function () {
     return gulp.src("./build/test/tests.js", {read: false})
         .pipe(mocha({reporter: "spec"}));
 });

@@ -7,8 +7,8 @@ import {Cache} from "./cache"
  * @returns {Function} The matcher function
  */
 export function type(type) {
-    return e => {
-        return e.tagName.toUpperCase() === type.toUpperCase()
+    return ele => {
+        return ele.tagName.toUpperCase() === type.toUpperCase()
     }
 }
 
@@ -19,8 +19,8 @@ export function type(type) {
  * @returns {Function} The matcher function
  */
 export function css(css) {
-    return e => {
-        return (e.className || "").split(" ").indexOf(css) >= 0
+    return ele => {
+        return (ele.className || "").split(" ").indexOf(css) >= 0
     }
 }
 
@@ -34,9 +34,9 @@ export function css(css) {
  * @returns {Function} The function to perform the checks
  */
 export function matches(...matchers) {
-    return e => {
-        return matchers.every(m => {
-            return m(e)
+    return ele => {
+        return matchers.every(matcher => {
+            return matcher(ele)
         })
     }
 }
@@ -51,10 +51,10 @@ export function matches(...matchers) {
  * @returns {Function} The function to perform the checks
  */
 export function children(...matchers) {
-    return e => {
-        let children = e.childNodes, matched = []
+    return ele => {
+        let children = ele.childNodes, matched = []
         for (let x = 0, len = children.length; x < len; x++) {
-            if (children[x].nodeType === 1 && matchers.every(m => m(children[x]))) {
+            if (children[x].nodeType === 1 && matchers.every(matcher => matcher(children[x]))) {
                 matched.push(children[x])
             }
         }
@@ -71,31 +71,73 @@ export function children(...matchers) {
  * @param handler The handler that is called for the event
  */
 export function on(ele, event, matcher, handler) {
-    ele.addEventListener(event, e => {
-        if (matcher(e.target)) {
-            handler(e)
+    ele.addEventListener(event, event => {
+        if (matcher(event.target)) {
+            handler(event)
         }
     })
 }
 
 /**
- * Returns a function that adds the passed class name to the element passed to the subsequently called function
+ * Returns a transformation function that adds the passed class name to the element passed to the subsequently called function
  *
  * Usage:
- * addClass("test")(ele)
- * addClass("test2")(ele)(ele2)
+ * cls("test")(ele)
+ * cls("test2", false)(ele)(ele2)
  *
- * @param cls The class name to add
+ * @param {string} cls The class name to add
+ * @param {boolean} add True to add or False to remove the class 
  * @returns {Function} The class adding function
  */
-export function addClass(cls) {
-    let f = e => {
-        let classes = !!e.className ? e.className.split(" ") : [];
-        classes.push(cls)
-        e.className = classes.join(" ")
-        return f
+export function cls(cls, add=true) {
+    let funct = ele => {
+        let classes = !!ele.className ? ele.className.split(" ") : [];
+        if (add) {
+           classes.push(cls)
+        } else {
+           let index = classes.indexOf(cls)
+           if (index >= 0) {
+              classes.splice(index, 1)
+           }
+        }
+        ele.className = classes.join(" ")
+        return funct
     }
-    return f
+    return funct
+}
+
+/**
+ * Returns a transformation function that sets the passed attributes on to the elements passed to the subsequently called function
+ * 
+ * Usage:
+ * attr("test", "val")(ele) // add
+ * attr("test", "val")(ele)(ele2) // add
+ * attr({
+ *  test: "val", // add
+ *  test2: undefined // remove
+ * )(ele) 
+ * attr("test")(ele) // remove
+ */
+export function attr(key, val) {
+    let funct = ele => {
+        if (typeof key === "object") {
+            Object.keys(key).forEach(k => {
+                if (typeof key[k] === "undefined") {
+                    ele.removeAttribute(k)
+                } else {
+                    ele.setAttribute(k, key[k])
+                }
+            })
+        } else {
+            if (typeof val === "undefined") {
+                ele.removeAttribute(key)
+            } else {
+                ele.setAttribute(key, val)
+            }
+        }
+        return funct
+    }
+    return funct
 }
 
 /**
@@ -143,14 +185,10 @@ export class SimpleDOMParser {
     parse(val) {
         let nodes = this._cache.get(val)
         if (!nodes) {
-            nodes = this._build(val)
+            nodes = new DOMList(this._build(val))
             this._cache.put(val, nodes)
         }
-        let result = []
-        nodes.forEach(node => {
-            result.push(node.cloneNode(true))
-        })
-        return result
+        return nodes.clone()
     }
 
     _build(val) {
@@ -194,4 +232,58 @@ export class SimpleDOMParser {
 
         return nodes
     }
+}
+
+/**
+ * The DOM List is a wrapper around a list of DOM elements that allow easy modification of the wrapped DOM elements.
+ * 
+ * Usage:
+ * let list = new DOMList([dom1, dom2])
+ * list.apply(cls("test"), attr("test", "val")).appendTo(parent) // functions can be chained
+ * list.items // access to array of elements
+ * list.clone() // returns a list of deep cloned node
+ * 
+ * @class
+ */
+export class DOMList {
+   constructor(doms=[]) {
+      this.items = doms
+   }
+   
+   /**
+    * Returns a new DOMList with all wrapped elements cloned deeply
+    */
+   clone() {
+       let cloned = []
+       this.items.forEach(ele => {
+           cloned.push(ele.cloneNode(true))
+       })
+       return new DOMList(cloned)
+   }
+   
+   /**
+    * Apply the passed transformation functions to the DOM elements within this DOMList
+    * 
+    * @param {function} Single or list of transformation functions such as #css, #attr
+    */
+   apply(...actions) {
+      actions.forEach(action => {
+          this.items.forEach(ele => {
+              action(ele)
+          })
+      })
+      return this
+   }
+   
+   /**
+    * Append the DOM elements within this DOMList to the passed parent DOM element
+    * 
+    * @param The parent DOM element to append to
+    */
+   appendTo(parent) {
+       this.items.forEach(ele => {
+           parent.appendChild(ele)
+       })
+       return this
+   }
 }

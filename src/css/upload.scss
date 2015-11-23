@@ -1,0 +1,260 @@
+$color-background: #dedede;
+$color-active: #38e;
+$color-action: #333;
+$color-done: #689F38;
+$color-error: #E53935;
+$size: 100px;
+$spinner-size: 32px;
+
+@keyframes spinner {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+%gone {
+    display: none;
+}
+
+%dimension {
+    width: $size;
+    height: $size;
+}
+
+%opaque {
+    opacity: 0.3;
+}
+
+.uploadjs {
+    font-size: 0px;
+
+    >img, input {
+        @extend %gone;
+    }
+
+    .item {
+        @extend %dimension;
+        display: inline-block;
+        background-color: $color-background;
+        margin-right: 2px;
+        position: relative;
+        overflow: hidden;
+        transition: opacity 0.5s, width 0.1s ease 0.5s, margin 0.5s;
+        opacity: 1;
+
+        img {
+            @extend %dimension;
+            border: none;
+        }
+
+        &.new {
+            @extend %dimension;
+            cursor: pointer;
+            vertical-align: top;
+            position: absolute;
+
+            .icon {
+                position: absolute;
+                font-size: 24px;
+                width: 100%;
+                line-height: 24px;
+                font-weight: bold;
+                text-align: center;
+                top: 50%;
+                margin-top: -12px;
+                cursor: pointer;
+                display: block;
+                color: darken(#dedede, 60%)
+            }
+
+            .plus::before {
+                content: "+";
+            }
+
+            &.hide {
+                @extend %gone
+            }
+
+            &:hover {
+                background-color: tint($color-active, 80%);
+
+                .icon {
+                    color: $color-active;
+                }
+            }
+        }
+
+        .actions {
+            position: absolute;
+            left: 5px;
+            right: 5px;
+            bottom: 0px;
+            height: 26px;
+            font-size: 16px;
+            line-height: 16px;
+            color: $color-action;
+            transform: translateY(100%);
+            transition: transform 0.2s;
+            text-align: right;
+
+            .action {
+                cursor: pointer;
+                display: inline-block;
+                margin-right: 5px;
+                width: 26px;
+                height: 26px;
+                text-align: center;
+
+                &:hover {
+                    color: $color-active;
+                }
+            }
+        }
+
+        .progress {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 100%;
+            height: 2px;
+            background-color: $color-active;
+            transform: translateX(-100%);
+            transition: transform 0.2s;
+        }
+
+        .spinner {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: - ($spinner-size / 2);
+            margin-left: - ($spinner-size / 2);
+            animation: spinner 1250ms infinite linear;
+            border: 2px solid $color-active;
+            border-right-color: transparent;
+            border-radius: $spinner-size;
+            box-sizing: border-box;
+            overflow: hidden;
+            text-indent: -9999px;
+            width: $spinner-size;
+            height: $spinner-size;
+        }
+
+        .icon {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 0%;
+            color: $color-active;
+            font-size: $spinner-size / 2;
+            margin-top: - ($spinner-size / 4);
+            line-height: $spinner-size / 2;
+            width: 100%;
+            text-align: center;
+            font-weight: bold;
+
+            $done-error-pad: 5px;
+
+            &.done, &.error {
+                color: #FFFFFF;
+                opacity: 1;
+                transition: opacity 3s;
+                display: block;
+                font-size: $spinner-size / 2;
+                margin-top: - (($spinner-size / 2) + $done-error-pad);
+
+                i {
+                    padding: $done-error-pad;
+                    border-radius: $size;
+                    width: $spinner-size;
+                    height: $spinner-size;
+                    display: inline-block;
+                }
+
+                &.going {
+                    opacity: 0;
+                }
+            }
+
+            &.done i {
+                background-color: $color-done;
+            }
+
+            &.done i::after {
+                content: "\2713";
+                font-size: $spinner-size * 0.8;
+                line-height: $spinner-size;
+                margin-left: -5px;
+            }
+
+            &.error i {
+                background-color: $color-error;
+            }
+
+            &.error i::after {
+                content: "!";
+                font-size: $spinner-size * 0.8;
+                line-height: $spinner-size;
+            }
+        }
+
+        .upload::before {
+            content: "\21E1";
+        }
+
+        .trash::before {
+            content: "\2718";
+        }
+
+        .action .trash {
+            font-size: 1.3em;
+        }
+
+        &.removed {
+            opacity: 0;
+            width: 0%;
+            margin-right: 0px;
+        }
+    
+        &.removed, &.removing, &.uploading {
+            img {
+                @extend %opaque;
+            }
+
+            .actions {
+                @extend %gone;
+            }
+        }
+
+        &.removing:not(.stopped), &.uploading:not(.stopped) {
+            .spinner, .icon {
+                display: block;
+            }
+        }
+
+        &.removing, &.removing:not(.stopped) {
+            .upload {
+                display: none;
+            }
+        }
+
+        &.uploading, &.uploading:not(.stopped) {
+            .trash {
+                display: none;
+            }
+        }
+    
+        &:hover {
+            img {
+                @extend %opaque;
+            }
+
+            .actions {
+                transform: translateY(0%);
+            }
+        }
+    }
+}
