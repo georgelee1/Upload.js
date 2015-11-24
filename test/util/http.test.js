@@ -72,7 +72,7 @@ export function run() {
 
             should(request.method).be.exactly("POST")
             should(request.url).be.exactly("/test")
-            should(request.async).be.true
+            should(request.async).be.True()
             should(request.headers["Content-Type"]).be.exactly("application/x-www-form-urlencoded")
         })
 
@@ -96,7 +96,7 @@ export function run() {
 
             should(request.method).be.exactly("POST")
             should(request.url).be.exactly("/test")
-            should(request.async).be.true
+            should(request.async).be.True()
             should(request.headers["Content-Type"]).be.exactly("multipart/form-data")
         })
 
@@ -127,7 +127,7 @@ export function run() {
         it("should trigger fail handler on unsuccessful response", function() {
             let called = false, times = 0
             new Http("/text").done(() => {called = "done"; times++}).fail(() => {called = "fail"; times++})
-            should(GLOBAL._current_XMLHttpRequest.onreadystatechange).be.a.function
+            should(GLOBAL._current_XMLHttpRequest.onreadystatechange).be.a.Function()
             GLOBAL._current_XMLHttpRequest.readyState = 4
             GLOBAL._current_XMLHttpRequest.status = 404
             GLOBAL._current_XMLHttpRequest.onreadystatechange()
@@ -138,8 +138,8 @@ export function run() {
         it("should trigger progress handler on upload progress update", function() {
             let called = false, times = 0, progress = 0
             new Http("/text").done(() => {called = "done"; times++}).fail(() => {called = "fail"; times++}).progress(e => progress = e)
-            should(GLOBAL._XMLHttpRequest_event).be.a.function
-            called.should.be.false
+            should(GLOBAL._XMLHttpRequest_event).be.a.Function()
+            called.should.be.False()
             times.should.be.exactly(0)
 
             GLOBAL._XMLHttpRequest_event({loaded:40,total:200})

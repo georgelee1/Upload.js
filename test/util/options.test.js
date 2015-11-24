@@ -32,7 +32,7 @@ export function run() {
                 let result, callback = v => {
                     result = v
                 }
-                should(o.get("key1", callback)).be.undefined
+                should(o.get("key1", callback)).be.Undefined()
                 should(result).be.exactly("val1")
             })
 
@@ -44,12 +44,12 @@ export function run() {
                 let result, callback = v => {
                     result = v
                 }
-                should(o.get("key2", callback)).be.undefined
+                should(o.get("key2", callback)).be.Undefined()
                 should(result).be.exactly("val2")
             })
 
             it("should return undefined for function value with done", function() {
-                should(o.get("key3")).be.undefined
+                should(o.get("key3")).be.Undefined()
             })
 
             it("callback should be called with value for function value with done", function(done) {

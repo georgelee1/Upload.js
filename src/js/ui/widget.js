@@ -1,6 +1,22 @@
 import {Options} from "../util/options"
 import {Queue} from "../util/queue"
-import {on, matchesOrChild, matches, children, hasClass, type, addClass, removeClass, attr, SimpleDOMParser} from "../util/dom"
+import {DOMList, Matcher, SimpleDOMParser} from "../util/dom"
+
+/**
+ * Why bother instantiating a Matcher when you can call the short convenience function
+ * So instead of new Matcher().css(..) it's m().css(..)
+ */
+function m(bubble) {
+    return new Matcher(bubble)
+}
+
+/**
+ * Instead of instantiating a DOMList every time we can use this this tiny convenience function
+ * So instead of new DOMList(..) it's just up(..)
+ */
+function up(arg) {
+    return new DOMList(arg)
+}
 
 /**
  * The Widget class is the controller between the DOM elements (and user actions) and the backend.
@@ -8,7 +24,7 @@ import {on, matchesOrChild, matches, children, hasClass, type, addClass, removeC
 export class Widget {
 
     constructor(ele, opts) {
-        this._ele = ele
+        this._ele = up(ele)
         this._opts = new Options(opts, this)
         this._size = 0
         this._max = this._opts.get("max")
@@ -26,35 +42,30 @@ export class Widget {
      * Registers appropriate listeners.
      */
     _init() {
-        if (!hasClass("uploadjs")(this._ele)) {
-            addClass("uploadjs")(this._ele)
-        }
+        this._ele.addClass("uploadjs")
 
-        this._picker = document.createElement("input")
-        this._picker.setAttribute("type", "file")
-        this._picker.setAttribute("multiple", "multiple")
-        this._ele.appendChild(this._picker)
-        on(this._picker, "change", () => true, this._picked.bind(this))
+        this._picker = up("input").attr({"type": "file", "multiple": "multiple"}).appendTo(this._ele).on("change", this._picked.bind(this))
 
-        children(matches(type("img")))(this._ele).forEach(i => {
+        this._ele.find("img").each(img => {
             if (!this._max || this._size < this._max) {
                 let item = this._parser.parse(this._opts.get("template.item"))
-                attr("src", i.getAttribute("src"))(children(type("img"))(item))
-                this._parser.parse(this._opts.get("template.actions")).appendTo(item.items)
+                item.find("img").attr("src", img.getAttribute("src"))
+                this._parser.parse(this._opts.get("template.actions")).appendTo(item)
                 item.appendTo(this._ele)
                 this._size++
             }
-            i.remove()
+            img.remove()
         })
 
         this._add = this._parser.parse(this._opts.get("template.add")).appendTo(this._ele)
 
         if (!this._max && this._size < this._max) {
-            addClass("hide")(this._add)
+            this._add.addClass("hide")
         }
 
-        on(this._ele, "click", matchesOrChild(hasClass("item", "new")), this._picker.click.bind(this._picker))
-        on(this._ele, "click", matchesOrChild(hasClass("del")), this._delete.bind(this))
+        this._picker = this._picker.items[0]
+        this._ele.on("click", m(true).css("item", "new"), this._picker.click.bind(this._picker))
+        this._ele.on("click", m(true).css("del"), this._delete.bind(this))
     }
 
     /**
@@ -65,13 +76,12 @@ export class Widget {
     _picked() {
         let files = this._picker.files
         for (let x = 0; x < files.length; x++) {
-            let item = this._parser.parse(this._opts.get("template.item"))
-            addClass("uploading")(item)
+            let item = this._parser.parse(this._opts.get("template.item")).addClass("uploading")
             this._parser.parse(this._opts.get("template.uploading")).appendTo(item)
             
             let reader = new FileReader()
             reader.onload = e => {
-                attr("src", e.target.result)(children(type("img"))(item))
+                item.find("img").attr("src", e.target.result)
             }
             reader.readAsDataURL(files[x])
             item.before(this._add)

@@ -20,7 +20,7 @@ export function run() {
                     }, 100)
                 })
                 for (let x = 0; x < 10; x++) {
-                    q.offer(x).should.be.true
+                    q.offer(x).should.be.True()
                 }
             })
 
@@ -40,7 +40,7 @@ export function run() {
                     }, 100)
                 }, opts)
                 for (let x = 0; x < 10; x++) {
-                    q.offer(x).should.be.true
+                    q.offer(x).should.be.True()
                 }
             })
 
@@ -53,8 +53,9 @@ export function run() {
                         fin()
                     }, 100)
                 }, opts)
-                q.offer(0).should.be.true
-                q.offer(1).should.be.false
+                q.offer(0).should.be.True()
+                q.offer(1).should.be.True()
+                q.offer(2).should.be.False()
             })
 
             it("should delay the start of the item execution", function(done) {
@@ -68,7 +69,7 @@ export function run() {
                     fin()
                     done()
                 }, opts)
-                q.offer(0).should.be.true
+                q.offer(0).should.be.True()
             })
         })
     })

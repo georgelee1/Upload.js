@@ -1,226 +1,41 @@
-import {type, hasClass, matchesOrChild, matches, children, on, addClass, removeClass, attr, SimpleDOMParser, DOMList} from "../../src/js/util/dom"
+import {SimpleDOMParser, DOMList, Matcher} from "../../src/js/util/dom"
 var should = require("should")
 
 export function run() {
 
     describe("Dom", function () {
 
-        describe("#type", function () {
-
-            it("should return true if the correct type", function () {
-                should(type("div")({tagName: "div"})).be.true
-            })
-
-            it("should return false if not the correct type", function () {
-                should(type("div")({tagName: "span"})).be.false
-            })
-        })
-
-        describe("#hasClass", function () {
-
-            it("should return true if the class equal", function () {
-                should(hasClass("test")({className: "test"})).be.true
-            })
-
-            it("should return true if the class exists", function () {
-                should(hasClass("test")({className: "some test other"})).be.true
-            })
-            
-            it("should return true if all classes exists", function () {
-                should(hasClass("test some")({className: "some test other"})).be.true
-                should(hasClass("test some other")({className: "some test other"})).be.true
-                should(hasClass("test some other different")({className: "some test other"})).be.false
-            })
-
-            it("should return false if the class does not exists", function () {
-                should(hasClass("test")({className: "some other"})).be.false
-            })
-
-            it("should return false if element has no class", function () {
-                should(hasClass("test")({})).be.false
-            })
-        })
         
-        describe("#matchesOrChild", function() {
-
-            it("should return true if matcher matches this element", function() {
-                let e = {tagName: "div", className: "test"}
-                should(matchesOrChild(hasClass("test"))(e)).be.true
-            })
+        describe("Matcher", function() {
             
-            it("should return true if matcher matches parent element", function() {
-                let e = {tagName: "div", className: "other", parentNode: {className: "test"}}
-                should(matchesOrChild(hasClass("test"))(e)).be.true
+            describe("#test", function() {
                 
-                e = {tagName: "div", className: "other", parentNode: {className: "other", parentNode: {className: "test"}}}
-                should(matchesOrChild(hasClass("test"))(e)).be.true
-            })
-            
-            it("should return false if one matcher does not match", function() {
-                let e = {tagName: "div", className: "test"}
-                should(matchesOrChild(hasClass("test"), type("span"))(e)).be.false
-                should(matchesOrChild(hasClass("testo"), type("div"))(e)).be.false
-            })
-        })
-
-        describe("#matches", function () {
-
-            it("should return true if matcher matches", function () {
-                let e = {tagName: "div", className: "test"}
-                should(matches(hasClass("test"))(e)).be.true
-            })
-
-            it("should return true if all matchers matches", function () {
-                let e = {tagName: "div", className: "test"}
-                should(matches(hasClass("test"), type("div"))(e)).be.true
-            })
-
-            it("should return false if one matcher does not matche", function () {
-                let e = {tagName: "div", className: "test"}
-                should(matches(hasClass("test"), type("span"))(e)).be.false
-                should(matches(hasClass("testo"), type("div"))(e)).be.false
-            })
-        })
-
-        describe("#children", function () {
-
-            it("should return a list of filtered children", function () {
-                let parent = {
-                    childNodes: [{
-                        nodeType: 1,
-                        tagName: "div",
-                        className: "another test"
-                    }, {
-                        nodeType: 3
-                    }, {
-                        nodeType: 1,
-                        tagName: "div",
-                        className: "another"
-                    }, {
-                        nodeType: 1,
-                        tagName: "span",
-                        className: "another test"
-                    }, {
-                        nodeType: 1,
-                        tagName: "span"
-                    }]
-                }
-
-                let result = children(hasClass("test"), type("span"))(parent)
-                result.should.be.Array
-                result.should.have.length(1)
-                result[0].tagName.should.be.exactly("span")
-                result[0].className.should.be.exactly("another test")
-            })
-        })
-
-        describe("#on", function () {
-
-            it("should fire the event for the matched target", function () {
-                class Ele {
-                    addEventListener(event, funct) {
-                        let events = this._events = this._events || {}
-                        let functs = events[event] = events[event] || []
-                        functs.push(funct)
-                    }
-
-                    trigger(event, target) {
-                        let events = (this._events || {})[event] || []
-                        events.forEach(e => e({target}))
-                    }
-                }
-
-                let ele = new Ele(), count = 0
-                on(ele, "click", hasClass("another"), e => {
-                    count++
+                it("should return true if the type matcher passed", function() {
+                    let m = new Matcher().type("img")
+                    m.test({"tagName": "img"}).should.be.True()
+                    m.test({"tagName": "IMG"}).should.be.True()
+                    m.test({"tagName": "div"}).should.be.False()
                 })
-                ele.trigger("click", {className: "test"})
-                count.should.be.exactly(0)
-                ele.trigger("click", {className: "anothera"})
-                count.should.be.exactly(0)
-                ele.trigger("click", {className: "another"})
-                count.should.be.exactly(1)
-            })
-        })
-
-        describe("#addClass", function () {
-
-            it("should add class to element with no class", function () {
-                let ele = {}
-                addClass("test")(ele)
-                ele.className.should.be.exactly("test")
-            })
-
-            it("should add class to element with class", function () {
-                let ele = {
-                    className: "other"
-                }
-                addClass("test")(ele)
-                ele.className.should.be.exactly("other test")
-            })
-            
-        })
-        
-        describe("#removeClass", function() {
-            
-            it("should remove class from element if only class", function () {
-                let ele = {
-                    className: "test"
-                }
-                removeClass("test")(ele)
-                ele.className.should.be.exactly("")
-            })
-            
-            it("should remove class from element with other classes", function () {
-                let ele = {
-                    className: "some thing test here"
-                }
-                removeClass("test")(ele)
-                ele.className.should.be.exactly("some thing here")
-            })
-        })
-        
-        describe("#attr", function() {
-            
-            class Ele {
-                constructor(attrs={}) {
-                    this._attrs = attrs
-                }
                 
-                setAttribute(key, val) {
-                    this._attrs[key] = val
-                }
+                it("should return true if the css matcher passed", function() {
+                    let m = new Matcher().css("test")
+                    m.test({"className": "test"}).should.be.True()
+                    m.test({"className": "another test"}).should.be.True()
+                    m.test({}).should.be.False()
+                    m.test({"className": "another"}).should.be.False()
+                })
                 
-                removeAttribute(key) {
-                    delete this._attrs[key]
-                }
-            }
-            
-            it("should add attribute on element", function() {
-                let ele = new Ele()
-                attr("test", "val1")(ele)
-                ele._attrs.should.be.eql({test: "val1"})
-            })
-            
-            it("should add attributes on element", function() {
-                let ele = new Ele()
-                attr({"test": "val1", "test2": "val2"})(ele)
-                ele._attrs.should.be.eql({"test": "val1", "test2": "val2"})
-            })
-            
-            it("should add and remove attributes on element", function() {
-                let ele = new Ele({"test": "val1", "test2": "val1"})
-                attr({"test": undefined, "test2": "val2"})(ele)
-                ele._attrs.should.be.eql({"test2": "val2"})
-            })
-            
-            it("should remove attribute on element", function() {
-                let ele = new Ele({"test": "val1", "test2": "val1"})
-                attr("test2")(ele)
-                ele._attrs.should.be.eql({"test": "val1"})
+                it("should return true if matcher pass when bubbling", function() {
+                    let m = new Matcher(true).css("test")
+                    m.test({"className": "another"}).should.be.False()
+                    m.test({"className": "another", "parentNode": {"className": "test"}}).should.be.True()
+                    m.test({"className": "another", "parentNode": {"className": "different"}}).should.be.False()
+                    m.test({"className": "another", "parentNode": {"className": "different", "parentNode": {"className": "test"}}}).should.be.True()
+                })
             })
         })
 
+        
         describe("SimpleDOMParser", function () {
 
             describe("#parse", function () {
@@ -247,7 +62,7 @@ export function run() {
                     result.items.should.have.length(1)
                     result.items[0].tagName.should.be.exactly("div")
                     result.items[0].children.should.have.length(0)
-                    should(result.items[0].className).be.undefined
+                    should(result.items[0].className).be.Undefined()
                 })
 
                 it("should parse element with class", function () {
@@ -277,10 +92,10 @@ export function run() {
                     result.items.should.have.length(2)
                     result.items[0].tagName.should.be.exactly("div")
                     result.items[0].children.should.have.length(0)
-                    should(result.items[0].className).be.undefined
+                    should(result.items[0].className).be.Undefined()
                     result.items[1].tagName.should.be.exactly("span")
                     result.items[1].children.should.have.length(0)
-                    should(result.items[1].className).be.undefined
+                    should(result.items[1].className).be.Undefined()
                 })
 
                 it("should parse element with children", function () {
@@ -290,10 +105,10 @@ export function run() {
                     result.items.should.have.length(1)
                     result.items[0].tagName.should.be.exactly("div")
                     result.items[0].children.should.have.length(1)
-                    should(result.items[0].className).should.be.undefined
+                    should(result.items[0].className).be.Undefined()
                     result.items[0].children[0].tagName.should.be.exactly("span")
                     result.items[0].children[0].children.should.have.length(0)
-                    should(result.items[0].children[0].className).be.undefined
+                    should(result.items[0].children[0].className).be.Undefined()
                 })
 
                 it("should parse element with children that have class", function () {
@@ -303,7 +118,7 @@ export function run() {
                     result.items.should.have.length(1)
                     result.items[0].tagName.should.be.exactly("div")
                     result.items[0].children.should.have.length(1)
-                    should(result.items[0].className).be.undefined
+                    should(result.items[0].className).be.Undefined()
                     result.items[0].children[0].tagName.should.be.exactly("span")
                     result.items[0].children[0].children.should.have.length(0)
                     result.items[0].children[0].className.should.be.exactly("test")
@@ -316,7 +131,7 @@ export function run() {
                     result.items.should.have.length(2)
                     result.items[0].tagName.should.be.exactly("div")
                     result.items[0].children.should.have.length(1)
-                    should(result.items[0].className).be.undefined
+                    should(result.items[0].className).be.Undefined()
                     result.items[0].children[0].tagName.should.be.exactly("span")
                     result.items[0].children[0].children.should.have.length(0)
                     result.items[0].children[0].className.should.be.exactly("test")
@@ -326,6 +141,7 @@ export function run() {
                 })
             })
         })
+        
         
         describe("DOMList", function() {
             
@@ -351,27 +167,14 @@ export function run() {
                     cloned.items.should.not.be.exactly(eles)
                     cloned.items.should.have.length(2)
                     cloned.items[0].name.should.be.exactly("test1")
-                    cloned.items[0].cloned.should.be.true
-                    cloned.items[0].deep.should.be.true
+                    cloned.items[0].cloned.should.be.True()
+                    cloned.items[0].deep.should.be.True()
                     cloned.items[1].name.should.be.exactly("test2")
-                    cloned.items[1].cloned.should.be.true
-                    cloned.items[1].deep.should.be.true
+                    cloned.items[1].cloned.should.be.True()
+                    cloned.items[1].deep.should.be.True()
                 })
             })
             
-            describe("#apply", function() {
-                
-                it("should apply transformation to all DOM elements", function() {
-                    let eles = [{"name": "test1"}, {"name": "test2"}]
-                    let list = new DOMList(eles)
-                    let returned = list.apply(addClass("test"))
-                    returned.should.be.exactly(list)
-                    list.items.should.have.length(2)
-                    list.items.should.be.exactly(eles)
-                    eles[0].should.be.eql({name: "test1", className: "test"})
-                    eles[1].should.be.eql({name: "test2", className: "test"})
-                })
-            })
             
             describe("#appendTo", function() {
                 
@@ -395,6 +198,7 @@ export function run() {
                     parent.children[1].should.be.eql({"name": "test2"})
                 });
             })
+            
             
             describe("#before", function() {
                 
@@ -426,6 +230,156 @@ export function run() {
                     parent.children[1].should.be.eql({"name": "test2"})
                     parent.children[2].should.be.eql({"name": "previous", "parentNode": parent})
                 });
+            })
+            
+            
+            describe("#addClass", function() {
+                
+                it("should add class to element with no class", function () {
+                    let ele = new DOMList([{}])
+                    ele.addClass("test")
+                    ele.items[0].className.should.be.exactly("test")
+                })
+
+                it("should add class to element with class", function () {
+                    let ele = new DOMList([{className: "other"}])
+                    ele.addClass("test")
+                    ele.items[0].className.should.be.exactly("other test")
+                })
+                
+                it("should not add class to element if that class already exists", function () {
+                    let ele = new DOMList([{className: "other test"}])
+                    ele.addClass("test")
+                    ele.items[0].className.should.be.exactly("other test")
+                })
+            })
+            
+            
+            describe("#removeClass", function() {
+                
+                it("should remove class from element if only class", function () {
+                    let ele = new DOMList([{className: "test"}])
+                    ele.removeClass("test")
+                    ele.items[0].className.should.be.exactly("")
+                })
+                
+                it("should remove class from element with other classes", function () {
+                    let ele = new DOMList([{className: "some thing test here"}])
+                    ele.removeClass("test")
+                    ele.items[0].className.should.be.exactly("some thing here")
+                })
+            })
+            
+            
+            describe("#attr", function() {
+            
+                class Ele {
+                    constructor(attrs={}) {
+                        this._attrs = attrs
+                    }
+                    
+                    setAttribute(key, val) {
+                        this._attrs[key] = val
+                    }
+                    
+                    removeAttribute(key) {
+                        delete this._attrs[key]
+                    }
+                }
+                
+                it("should add attribute on element", function() {
+                    let ele = new DOMList([new Ele()])
+                    ele.attr("test", "val1")
+                    ele.items[0]._attrs.should.be.eql({test: "val1"})
+                })
+                
+                it("should add attributes on element", function() {
+                    let ele = new DOMList([new Ele()])
+                    ele.attr({"test": "val1", "test2": "val2"})
+                    ele.items[0]._attrs.should.be.eql({"test": "val1", "test2": "val2"})
+                })
+                
+                it("should add and remove attributes on element", function() {
+                    let ele = new DOMList([new Ele({"test": "val1", "test2": "val1"})])
+                    ele.attr({"test": undefined, "test2": "val2"})
+                    ele.items[0]._attrs.should.be.eql({"test2": "val2"})
+                })
+                
+                it("should remove attribute on element", function() {
+                    let ele = new DOMList([new Ele({"test": "val1", "test2": "val1"})])
+                    ele.attr("test2")
+                    ele.items[0]._attrs.should.be.eql({"test": "val1"})
+                })
+            })
+            
+            
+            describe("#on", function () {
+
+                it("should fire the event for the matched target", function () {
+                    class Ele {
+                        addEventListener(event, funct) {
+                            let events = this._events = this._events || {}
+                            let functs = events[event] = events[event] || []
+                            functs.push(funct)
+                        }
+    
+                        trigger(event, target) {
+                            let events = (this._events || {})[event] || []
+                            events.forEach(e => e({target}))
+                        }
+                    }
+    
+                    let ele = new DOMList([new Ele()]), count = 0
+                    ele.on("click", new Matcher().css("another"), e => {
+                        count++
+                    })
+                    ele.items[0].trigger("click", {className: "test"})
+                    count.should.be.exactly(0)
+                    ele.items[0].trigger("click", {className: "anothera"})
+                    count.should.be.exactly(0)
+                    ele.items[0].trigger("click", {className: "another"})
+                    count.should.be.exactly(1)
+                })
+            })
+            
+            
+            describe("#find", function() {
+                
+                class Ele {
+                    constructor(children) {
+                        this.children = children
+                    }
+                    
+                    querySelectorAll(selector) {
+                        let result = []
+                        this.children.forEach(ele => {
+                            if (ele.tagName === selector) {
+                                result.push(ele)
+                            }
+                        })
+                        return result
+                    }
+                }
+                
+                it("should find all children elements", function() {
+                    let ele = new DOMList([new Ele([{tagName: "div"}, {tagName: "div"}, {tagName: "img"}]), new Ele([{tagName: "img"}, {tagName: "div"}])])
+                    let result = ele.find("div").items
+                    result.should.have.length(3)
+                    result = ele.find("img").items
+                    result.should.have.length(2)
+                })
+            })
+            
+            
+            describe("#each", function() {
+                
+                it("should trigger the handler for each element", function() {
+                    let ele = new DOMList([{},{}]).each(e => {
+                        e.reached = true
+                    })
+                    ele.items[0].should.be.eql({reached:true})
+                    ele.items[1].should.be.eql({reached:true})
+                })
             })
         })
     })

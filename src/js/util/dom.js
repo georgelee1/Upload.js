@@ -1,225 +1,6 @@
 import {Cache} from "./cache"
 
 /**
- * Simple util function that calls the callback for every element with the element as the
- * only parameter. Determines if the passed element type is an Array, DOMList or single element.
- *
- * @param ele The element(s)
- * @param callback The callback function
- */
-function every(ele, callback) {
-    let elements = []
-    if (Array.isArray(ele)) {
-        elements = ele
-    } else if (Array.isArray(ele.items)) {
-        elements = ele.items
-    } else {
-        elements.push(ele)
-    }
-    elements.forEach(callback)
-}
-
-/**
- * Returns a matcher function that tests if the DOM element is of the passed type
- *
- * @param type The element node type
- * @returns {Function} The matcher function
- */
-export function type(type) {
-    return ele => {
-        return ele.tagName.toUpperCase() === type.toUpperCase()
-    }
-}
-
-/**
- * Returns a matcher function that tests if the passed class name(s) exists for the DOM element
- *
- * @param css The class name to check
- * @returns {Function} The matcher function
- */
-export function hasClass(...css) {
-    return ele => {
-        let classes = (ele.className || "").split(" ")
-        return css.every(c => { return classes.indexOf(c) >= 0 })
-    }
-}
-
-/**
- * Takes a single or list of matcher functions. Returns a function that takes an HTML DOM element and returns true if
- * all matchers return True for the passed element or any parent up to the root of that element.
- *
- * @see {@link css}
- * @see {@link type}
- * @param matchers Single or list of matcher functions
- * @returns {Function} The function to perform the checks
- */
-export function matchesOrChild(...matchers) {
-    return ele => {
-        let current = ele
-        while (current) {
-            if (matchers.every(matcher => { return matcher(current) })) {
-                return true
-            }
-            current = current.parentNode
-        }
-        return false
-    }
-}
-
-/**
- * Takes a single or list of matcher functions. Returns a function that takes an HTML DOM element and returns true if
- * all matchers return True for the passed element.
- *
- * @see {@link css}
- * @see {@link type}
- * @param matchers Single or list of matcher functions
- * @returns {Function} The function to perform the checks
- */
-export function matches(...matchers) {
-    return ele => {
-        return matchers.every(matcher => {
-            return matcher(ele)
-        })
-    }
-}
-
-/**
- * Takes a single or list of matcher functions. Returns a function that takes an HTML DOM element and returns a list of
- * children elements that
- *
- * @see {@link css}
- * @see {@link type}
- * @param matchers Single or list of matcher functions
- * @returns {Function} The function to perform the checks
- */
-export function children(...matchers) {
-    return ele => {
-        let matched = []
-        every(ele, e => {
-            let children = e.childNodes
-            for (let x = 0, len = children.length; x < len; x++) {
-                if (children[x].nodeType === 1 && matchers.every(matcher => matcher(children[x]))) {
-                    matched.push(children[x])
-                }
-            }
-        })
-        return matched
-    }
-}
-
-/**
- * Triggers the handler for any children of ele or ele itself it they match the matcher
- *
- * @param ele The HTML DOM element
- * @param event The event name, eg. click
- * @param matcher The matcher function, should return True if matches
- * @param handler The handler that is called for the event
- */
-export function on(ele, event, matcher, handler) {
-    every(ele, e => {
-        e.addEventListener(event, event => {
-            if (matcher(event.target)) {
-                handler(event)
-            }
-        })
-    })
-}
-
-/**
- * Returns a transformation function that adds or removes the passed class name to the element passed to the subsequently called function
- *
- * Usage:
- * adjustClass("test")(ele)
- * adjustClass("test2", false)(ele)(ele2)
- *
- * @param {string} cls The class name to add
- * @param {boolean} add True to add or False to remove the class
- * @returns {Function} The class adding function
- */
-function adjustClass(cls, add = true) {
-    let func = elements => {
-        every(elements, ele => {
-            let classes = !!ele.className ? ele.className.split(" ") : [];
-            if (add) {
-                classes.push(cls)
-            } else {
-                let index = classes.indexOf(cls)
-                if (index >= 0) {
-                    classes.splice(index, 1)
-                }
-            }
-            ele.className = classes.join(" ")
-        })
-        return func
-    }
-    return func
-}
-
-/**
- * Returns a transformation function that adds the passed class name to the element passed to the subsequently called function
- *
- * Usage:
- * addClass("test")(ele)
- * addClass("test2")(ele)(ele2)
- *
- * @param {string} cls The class name to add
- * @returns {Function} The class adding function
- */
-export function addClass(cls) {
-    return adjustClass(cls, true)
-}
-
-/**
- * Returns a transformation function that removed the passed class name from the element passed to the subsequently called function
- *
- * Usage:
- * removeCLass("test")(ele)
- * removeCLass("test2")(ele)(ele2)
- *
- * @param {string} cls The class name to remove
- * @returns {Function} The class removing function
- */
-export function removeClass(cls) {
-    return adjustClass(cls, false)
-}
-
-/**
- * Returns a transformation function that sets the passed attributes on to the elements passed to the subsequently called function
- *
- * Usage:
- * attr("test", "val")(ele) // add
- * attr("test", "val")(ele)(ele2) // add
- * attr({
- *  test: "val", // add
- *  test2: undefined // remove
- * )(ele) 
- * attr("test")(ele) // remove
- */
-export function attr(key, val) {
-    let func = elements => {
-        every(elements, ele => {
-            if (typeof key === "object") {
-                Object.keys(key).forEach(k => {
-                    if (typeof key[k] === "undefined") {
-                        ele.removeAttribute(k)
-                    } else {
-                        ele.setAttribute(k, key[k])
-                    }
-                })
-            } else {
-                if (typeof val === "undefined") {
-                    ele.removeAttribute(key)
-                } else {
-                    ele.setAttribute(key, val)
-                }
-            }
-        })
-        return func
-    }
-    return func
-}
-
-/**
  * The purpose of the SimpleDOMParser is to parse an expressive HTML string into DOM elements. The style of the expressive HTML string
  * is simple on purpose with only the element tag name and class names definable. Hierarchy is expressed using parenthesis.
  *
@@ -314,19 +95,38 @@ export class SimpleDOMParser {
 }
 
 /**
+ * Flattens the passed object into an Array of elements. Detect if the type is a single element, an Array or a DOMList.
+ */
+function flat(ele) {
+    let elements = []
+    if (Array.isArray(ele)) {
+        elements = ele
+    } else if (Array.isArray(ele.items)) {
+        elements = ele.items
+    } else {
+        elements.push(ele)
+    }
+    return elements
+}
+
+/**
  * The DOM List is a wrapper around a list of DOM elements that allow easy modification of the wrapped DOM elements.
  *
  * Usage:
  * let list = new DOMList([dom1, dom2])
- * list.apply(hasClass("test"), attr("test", "val")).appendTo(parent) // functions can be chained
  * list.items // access to array of elements
- * list.clone() // returns a list of deep cloned node
  *
  * @class
  */
 export class DOMList {
     constructor(doms = []) {
-        this.items = doms
+        if (typeof doms === "string") {
+            this.items = [document.createElement(doms)]
+        } else if (Array.isArray(doms)) {
+            this.items = doms
+        } else {
+            this.items = [doms]
+        }
     }
 
     /**
@@ -341,26 +141,12 @@ export class DOMList {
     }
 
     /**
-     * Apply the passed transformation functions to the DOM elements within this DOMList
-     *
-     * @param {function} actions Single or list of transformation functions such as #css, #attr
-     */
-    apply(...actions) {
-        actions.forEach(action => {
-            this.items.forEach(ele => {
-                action(ele)
-            })
-        })
-        return this
-    }
-
-    /**
      * Append the DOM elements within this DOMList to the passed parent DOM element
      *
      * @param parent The parent DOM element to append to
      */
     appendTo(parent) {
-        every(parent, p => {
+        flat(parent).forEach(p => {
             this.items.forEach(ele => {
                 p.appendChild(ele)
             })
@@ -374,11 +160,189 @@ export class DOMList {
      * @param parent The parent DOM element to insert before
      */
     before(insertBefore) {
-        every(insertBefore, b => {
+        flat(insertBefore).forEach(b => {
             this.items.forEach(ele => {
                 b.parentNode.insertBefore(ele, b)
             })
         })
         return this
+    }
+    
+    /**
+     * Add the passed style class to all the DOM elements within this DOMList
+     * 
+     * @param cls The class(s) name to add
+     */
+    addClass(...cls) {
+        this.items.forEach(ele => {
+            let classes = !!ele.className ? ele.className.split(" ") : [];
+            cls.forEach(c => {
+                if (classes.indexOf(c) < 0) {
+                    classes.push(c)
+                }
+            })
+            ele.className = classes.join(" ")
+        })
+        return this
+    }
+    
+    /**
+     * Add the passed style class to all the DOM elements within this DOMList
+     * 
+     * @param cls The class(s) name to add
+     */
+    removeClass(...cls) {
+        this.items.forEach(ele => {
+            let classes = !!ele.className ? ele.className.split(" ") : [];
+            cls.forEach(c => {
+                let index = classes.indexOf(c)
+                if (index >= 0) {
+                    classes.splice(index, 1)
+                }
+            })
+            ele.className = classes.join(" ")
+        })
+        return this
+    }
+    
+
+    /**
+    * Set the passed attribute on all the DOM elements within this DOMList.
+    *
+    * Usage:
+    * let list = new DOMList([dom1, dom2])
+    * list.attr("test", "val") // add
+    * list.attr({
+    *  test: "val", // add
+    *  test2: undefined // remove
+    * ) 
+    * list.attr("test") // remove
+    */
+    attr(key, val) {
+        this.items.forEach(ele => {
+            if (typeof key === "object") {
+                Object.keys(key).forEach(k => {
+                    if (typeof key[k] === "undefined") {
+                        ele.removeAttribute(k)
+                    } else {
+                        ele.setAttribute(k, key[k])
+                    }
+                })
+            } else {
+                if (typeof val === "undefined") {
+                    ele.removeAttribute(key)
+                } else {
+                    ele.setAttribute(key, val)
+                }
+            }
+        })
+        return this
+    }
+     
+    /**
+     * Registers the event lister on all the DOM elements within the DOMList
+     *
+     * @param event The event name, eg. click
+     * @param matcher The matcher to filter events
+     * @param handler The handler that is called for the event
+     */
+    on(event, matcher, handler) {
+        this.items.forEach(ele => {
+            ele.addEventListener(event, event => {
+                if (matcher instanceof Matcher) {
+                    if (matcher.test(event.target)) {
+                        handler(event)
+                    }
+                } else {
+                    matcher(event)
+                }
+            })
+        })
+        return this
+    }
+    
+    /**
+     * Uses the <ele>.querySelectorAll(..) to find the appropriate nodes from all the DOM elements within this DOMList and returns
+     * them in a wrapped DOMList
+     */
+    find(selector) {
+        let found = []
+        this.items.forEach(ele => {
+            let result = ele.querySelectorAll(selector)
+            for (let x = 0, len = result.length; x < len; x++) {
+                found.push(result[x])
+            }
+        })
+        return new DOMList(found)
+    }
+    
+    /**
+     * Calls each of the passed handlers for each of the DOM elements within this DOMList with the DOM element as the only parameter
+     */
+    each(...handlers) {
+        handlers.forEach(handler => {
+            this.items.forEach(ele => {
+                handler(ele)
+            })
+        })
+        return this
+    }
+}
+
+const MATCHERS = {
+        type(type, ele) {
+            return ele.tagName.toUpperCase() === type.toUpperCase()
+        },
+        css(css, ele) {
+            let classes = (ele.className || "").split(" ")
+            return css.every(c => { return classes.indexOf(c) >= 0 })
+        }
+}
+
+/**
+ * The Matcher tests whether a set of elements all match
+ */
+export class Matcher {
+    constructor(bubble=false) {
+        this._bubble = bubble
+        this._matchers = []
+    }
+    
+    /**
+     * The testing element must match the type of the element
+     */
+    type(type) {
+        this._matchers.push(MATCHERS.type.bind(this, type))
+        return this
+    }
+    
+    /**
+     * Test testing element must contain all the css classes
+     */
+    css(...css) {
+        this._matchers.push(MATCHERS.css.bind(this, css))
+        return this
+    }
+    
+    /**
+     * Returns true if the passed element(s) match all the matchers configured
+     */
+    test(ele) {
+        return flat(ele).every(e => {
+            let next = e, result = false
+            while (next && next.parentNode !== next) {
+                result = this._matchers.every(m => m(next))
+                if (!result) {
+                    if (this._bubble) {
+                        next = next.parentNode
+                    } else {
+                        return false
+                    }
+                } else {
+                    return true
+                }
+            }
+            return false
+        }, this)
     }
 }
