@@ -9,8 +9,8 @@ const DEFAULTS = {
         "item": "div.item (img)",
         "add": "div.item.new (div.icon.plus)",
         "actions": "div.actions (div.action.bin (div.trash))",
-        "deleting": "div.spinner div.icon.upload",
-        "uploading": "div.spinner div.icon.trash div.progress",
+        "deleting": "div.spinner div.icon.trash",
+        "uploading": "div.spinner div.icon.upload div.progress",
         "done": "div.icon.done (i)",
         "error": "div.icon.error (i)"
     },

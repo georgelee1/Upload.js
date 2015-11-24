@@ -32,14 +32,15 @@ export function type(type) {
 }
 
 /**
- * Returns a matcher function that tests if the passed class name exists for the DOM element
+ * Returns a matcher function that tests if the passed class name(s) exists for the DOM element
  *
  * @param css The class name to check
  * @returns {Function} The matcher function
  */
-export function css(css) {
+export function hasClass(...css) {
     return ele => {
-        return (ele.className || "").split(" ").indexOf(css) >= 0
+        let classes = (ele.className || "").split(" ")
+        return css.every(c => { return classes.indexOf(c) >= 0 })
     }
 }
 
@@ -125,17 +126,17 @@ export function on(ele, event, matcher, handler) {
 }
 
 /**
- * Returns a transformation function that adds the passed class name to the element passed to the subsequently called function
+ * Returns a transformation function that adds or removes the passed class name to the element passed to the subsequently called function
  *
  * Usage:
- * cls("test")(ele)
- * cls("test2", false)(ele)(ele2)
+ * adjustClass("test")(ele)
+ * adjustClass("test2", false)(ele)(ele2)
  *
  * @param {string} cls The class name to add
  * @param {boolean} add True to add or False to remove the class
  * @returns {Function} The class adding function
  */
-export function cls(cls, add = true) {
+function adjustClass(cls, add = true) {
     let func = elements => {
         every(elements, ele => {
             let classes = !!ele.className ? ele.className.split(" ") : [];
@@ -152,6 +153,34 @@ export function cls(cls, add = true) {
         return func
     }
     return func
+}
+
+/**
+ * Returns a transformation function that adds the passed class name to the element passed to the subsequently called function
+ *
+ * Usage:
+ * addClass("test")(ele)
+ * addClass("test2")(ele)(ele2)
+ *
+ * @param {string} cls The class name to add
+ * @returns {Function} The class adding function
+ */
+export function addClass(cls) {
+    return adjustClass(cls, true)
+}
+
+/**
+ * Returns a transformation function that removed the passed class name from the element passed to the subsequently called function
+ *
+ * Usage:
+ * removeCLass("test")(ele)
+ * removeCLass("test2")(ele)(ele2)
+ *
+ * @param {string} cls The class name to remove
+ * @returns {Function} The class removing function
+ */
+export function removeClass(cls) {
+    return adjustClass(cls, false)
 }
 
 /**
@@ -289,7 +318,7 @@ export class SimpleDOMParser {
  *
  * Usage:
  * let list = new DOMList([dom1, dom2])
- * list.apply(cls("test"), attr("test", "val")).appendTo(parent) // functions can be chained
+ * list.apply(hasClass("test"), attr("test", "val")).appendTo(parent) // functions can be chained
  * list.items // access to array of elements
  * list.clone() // returns a list of deep cloned node
  *
@@ -331,12 +360,24 @@ export class DOMList {
      * @param parent The parent DOM element to append to
      */
     appendTo(parent) {
-        let p = parent
-        if (Array.isArray(p)) {
-            p = parent[0]
-        }
-        this.items.forEach(ele => {
-            p.appendChild(ele)
+        every(parent, p => {
+            this.items.forEach(ele => {
+                p.appendChild(ele)
+            })
+        })
+        return this
+    }
+    
+    /**
+     * Inserts the DOM elements within the DOMList before the passed parent DOM element
+     * 
+     * @param parent The parent DOM element to insert before
+     */
+    before(insertBefore) {
+        every(insertBefore, b => {
+            this.items.forEach(ele => {
+                b.parentNode.insertBefore(ele, b)
+            })
         })
         return this
     }

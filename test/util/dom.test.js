@@ -1,4 +1,4 @@
-import {type, css, matches, children, on, cls, attr, SimpleDOMParser, DOMList} from "../../src/js/util/dom"
+import {type, hasClass, matchesOrChild, matches, children, on, addClass, removeClass, attr, SimpleDOMParser, DOMList} from "../../src/js/util/dom"
 var should = require("should")
 
 export function run() {
@@ -16,22 +16,50 @@ export function run() {
             })
         })
 
-        describe("#css", function () {
+        describe("#hasClass", function () {
 
             it("should return true if the class equal", function () {
-                should(css("test")({className: "test"})).be.true
+                should(hasClass("test")({className: "test"})).be.true
             })
 
             it("should return true if the class exists", function () {
-                should(css("test")({className: "some test other"})).be.true
+                should(hasClass("test")({className: "some test other"})).be.true
+            })
+            
+            it("should return true if all classes exists", function () {
+                should(hasClass("test some")({className: "some test other"})).be.true
+                should(hasClass("test some other")({className: "some test other"})).be.true
+                should(hasClass("test some other different")({className: "some test other"})).be.false
             })
 
             it("should return false if the class does not exists", function () {
-                should(css("test")({className: "some other"})).be.false
+                should(hasClass("test")({className: "some other"})).be.false
             })
 
             it("should return false if element has no class", function () {
-                should(css("test")({})).be.false
+                should(hasClass("test")({})).be.false
+            })
+        })
+        
+        describe("#matchesOrChild", function() {
+
+            it("should return true if matcher matches this element", function() {
+                let e = {tagName: "div", className: "test"}
+                should(matchesOrChild(hasClass("test"))(e)).be.true
+            })
+            
+            it("should return true if matcher matches parent element", function() {
+                let e = {tagName: "div", className: "other", parentNode: {className: "test"}}
+                should(matchesOrChild(hasClass("test"))(e)).be.true
+                
+                e = {tagName: "div", className: "other", parentNode: {className: "other", parentNode: {className: "test"}}}
+                should(matchesOrChild(hasClass("test"))(e)).be.true
+            })
+            
+            it("should return false if one matcher does not match", function() {
+                let e = {tagName: "div", className: "test"}
+                should(matchesOrChild(hasClass("test"), type("span"))(e)).be.false
+                should(matchesOrChild(hasClass("testo"), type("div"))(e)).be.false
             })
         })
 
@@ -39,18 +67,18 @@ export function run() {
 
             it("should return true if matcher matches", function () {
                 let e = {tagName: "div", className: "test"}
-                should(matches(css("test"))(e)).be.true
+                should(matches(hasClass("test"))(e)).be.true
             })
 
             it("should return true if all matchers matches", function () {
                 let e = {tagName: "div", className: "test"}
-                should(matches(css("test"), type("div"))(e)).be.true
+                should(matches(hasClass("test"), type("div"))(e)).be.true
             })
 
-            it("should return false if one matcher does not matches", function () {
+            it("should return false if one matcher does not matche", function () {
                 let e = {tagName: "div", className: "test"}
-                should(matches(css("test"), type("span"))(e)).be.false
-                should(matches(css("testo"), type("div"))(e)).be.false
+                should(matches(hasClass("test"), type("span"))(e)).be.false
+                should(matches(hasClass("testo"), type("div"))(e)).be.false
             })
         })
 
@@ -78,7 +106,7 @@ export function run() {
                     }]
                 }
 
-                let result = children(css("test"), type("span"))(parent)
+                let result = children(hasClass("test"), type("span"))(parent)
                 result.should.be.Array
                 result.should.have.length(1)
                 result[0].tagName.should.be.exactly("span")
@@ -103,7 +131,7 @@ export function run() {
                 }
 
                 let ele = new Ele(), count = 0
-                on(ele, "click", css("another"), e => {
+                on(ele, "click", hasClass("another"), e => {
                     count++
                 })
                 ele.trigger("click", {className: "test"})
@@ -115,11 +143,11 @@ export function run() {
             })
         })
 
-        describe("#cls", function () {
+        describe("#addClass", function () {
 
             it("should add class to element with no class", function () {
                 let ele = {}
-                cls("test")(ele)
+                addClass("test")(ele)
                 ele.className.should.be.exactly("test")
             })
 
@@ -127,15 +155,19 @@ export function run() {
                 let ele = {
                     className: "other"
                 }
-                cls("test")(ele)
+                addClass("test")(ele)
                 ele.className.should.be.exactly("other test")
             })
+            
+        })
+        
+        describe("#removeClass", function() {
             
             it("should remove class from element if only class", function () {
                 let ele = {
                     className: "test"
                 }
-                cls("test", false)(ele)
+                removeClass("test")(ele)
                 ele.className.should.be.exactly("")
             })
             
@@ -143,7 +175,7 @@ export function run() {
                 let ele = {
                     className: "some thing test here"
                 }
-                cls("test", false)(ele)
+                removeClass("test")(ele)
                 ele.className.should.be.exactly("some thing here")
             })
         })
@@ -332,7 +364,7 @@ export function run() {
                 it("should apply transformation to all DOM elements", function() {
                     let eles = [{"name": "test1"}, {"name": "test2"}]
                     let list = new DOMList(eles)
-                    let returned = list.apply(cls("test"))
+                    let returned = list.apply(addClass("test"))
                     returned.should.be.exactly(list)
                     list.items.should.have.length(2)
                     list.items.should.be.exactly(eles)
@@ -361,6 +393,38 @@ export function run() {
                     parent.children.should.have.length(2)
                     parent.children[0].should.be.eql({"name": "test1"})
                     parent.children[1].should.be.eql({"name": "test2"})
+                });
+            })
+            
+            describe("#before", function() {
+                
+                class Ele {
+                    constructor() {
+                        this.children = []
+                    }
+                    
+                    insertBefore(ele, ref) {
+                        let i = this.children.indexOf(ref)
+                        if (i >= 0) {
+                            this.children.splice(i, 0, ele)
+                        } else {
+                            this.children.push(ele)
+                        }
+                    }
+                }
+                
+                it("should insert all DOM elements before the parent element", function() {
+                    let parent = new Ele()
+                    let ref = {parentNode: parent, "name": "previous"}
+                    parent.children.push(ref)
+                    
+                    let list = new DOMList([{"name": "test1"}, {"name": "test2"}])
+                    let returned = list.before(ref)
+                    returned.should.be.exactly(list)
+                    parent.children.should.have.length(3)
+                    parent.children[0].should.be.eql({"name": "test1"})
+                    parent.children[1].should.be.eql({"name": "test2"})
+                    parent.children[2].should.be.eql({"name": "previous", "parentNode": parent})
                 });
             })
         })
