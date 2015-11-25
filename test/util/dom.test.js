@@ -3,6 +3,21 @@ var should = require("should")
 
 export function run() {
 
+    GLOBAL.document = {
+        createElement(tagName) {
+            return {
+                children: [],
+                tagName,
+                appendChild(child) {
+                    this.children.push(child)
+                },
+                cloneNode() {
+                    return this
+                }
+            }
+        }
+    }
+    
     describe("Dom", function () {
 
         
@@ -39,21 +54,6 @@ export function run() {
         describe("SimpleDOMParser", function () {
 
             describe("#parse", function () {
-
-                GLOBAL.document = {
-                    createElement(tagName) {
-                        return {
-                            children: [],
-                            tagName,
-                            appendChild(child) {
-                                this.children.push(child)
-                            },
-                            cloneNode() {
-                                return this
-                            }
-                        }
-                    }
-                }
 
                 it("should parse element", function () {
                     let parser = new SimpleDOMParser()
@@ -145,6 +145,35 @@ export function run() {
         
         describe("DOMList", function() {
             
+            describe("#constructor", function() {
+                
+                it("should create a new element if supplied a string", function() {
+                    let ele = new DOMList("input")
+                    ele.items.should.have.length(1)
+                    ele.items[0].tagName.should.be.exactly("input")
+                })
+                
+                it("should create an empty list if supplied undefined", function() {
+                    let e = undefined
+                    let ele = new DOMList(e)
+                    ele.items.should.have.length(0)
+                })
+                
+                it("should set the array passed as the list of elements", function() {
+                    let ele = new DOMList([{"name":"test"}, {"name":"test2"}])
+                    ele.items.should.have.length(2)
+                    ele.items[0].name.should.be.exactly("test")
+                    ele.items[1].name.should.be.exactly("test2")
+                })
+                
+                it("should create a list if supplied with a single element", function() {
+                    let ele = new DOMList({"name":"test"})
+                    ele.items.should.have.length(1)
+                    ele.items[0].name.should.be.exactly("test")
+                })
+            })
+            
+            
             describe("#clone", function() {
                 
                 class Ele {
@@ -233,6 +262,88 @@ export function run() {
             })
             
             
+            describe("#remove", function() {
+                
+                class Ele {
+                    constructor(name, children=[]) {
+                        this.name = name
+                        this.children = children
+                        this.children.forEach(c => {
+                            c.parentNode = this
+                        })
+                    }
+                    
+                    removeChild(ele) {
+                        let i = this.children.indexOf(ele)
+                        if (i >=0) {
+                            this.children.splice(i, 1)
+                        }
+                    }
+                }
+                
+                it("should remove the element from it's parent", function() {
+                    let child1 = new Ele("testChild1")
+                    let child2 = new Ele("testChild2")
+                    let parent = new Ele("testParent", [child1, child2])
+                    let ele = new DOMList(child2)
+                    ele.remove().should.be.exactly(ele)
+                    parent.children.should.have.length(1)
+                    parent.children[0].name.should.be.exactly("testChild1")
+                })
+            })
+            
+            
+            describe("#parent", function() {
+                
+                class Ele {
+                    constructor(className, children=[]) {
+                        this.className = className
+                        this.children = children
+                        this.children.forEach(c => {
+                            c.parentNode = this
+                        })
+                    }
+                    
+                    removeChild(ele) {
+                        let i = this.children.indexOf(ele)
+                        if (i >=0) {
+                            this.children.splice(i, 1)
+                        }
+                    }
+                }
+                
+                it("should return the direct parent when no matcher supplied", function() {
+                    let child = new Ele("testChild")
+                    let parent1 = new Ele("testParent1", [child])
+                    let parent2 = new Ele("testParent2", [parent1])
+                    let ele = new DOMList(child)
+                    let result = ele.parent()
+                    result.should.be.instanceof(DOMList)
+                    result.items[0].should.be.exactly(parent1)
+                })
+                
+                it("should return the parent that matches the passed matcher", function() {
+                    let child = new Ele("testChild")
+                    let parent1 = new Ele("testParent1", [child])
+                    let parent2 = new Ele("testParent2", [parent1])
+                    let ele = new DOMList(child)
+                    let result = ele.parent(new Matcher().css("testParent2"))
+                    result.should.be.instanceof(DOMList)
+                    result.items[0].should.be.exactly(parent2)
+                })
+                
+                it("should return undefined if not parent matches the passed matcher", function() {
+                    let child = new Ele("testChild")
+                    let parent1 = new Ele("testParent1", [child])
+                    let parent2 = new Ele("testParent2", [parent1])
+                    let ele = new DOMList(child)
+                    let result = ele.parent(new Matcher().css("test"))
+                    result.should.be.instanceof(DOMList)
+                    result.items.should.have.length(0)
+                })
+            })
+            
+            
             describe("#addClass", function() {
                 
                 it("should add class to element with no class", function () {
@@ -271,6 +382,26 @@ export function run() {
             })
             
             
+            describe("#css", function() {
+                
+                it("should add css style to element", function() {
+                    let ele = new DOMList([{style:{}}])
+                    ele.css("display", "none")
+                    should(ele.items[0].style.display).be.exactly("none")
+                })
+                
+                it("should add css styles to element", function() {
+                    let ele = new DOMList([{style:{}}])
+                    ele.css({
+                        "display": "none",
+                        "width": "100%"
+                    })
+                    should(ele.items[0].style.display).be.exactly("none")
+                    should(ele.items[0].style.width).be.exactly("100%")
+                })
+            })
+            
+            
             describe("#attr", function() {
             
                 class Ele {
@@ -284,6 +415,10 @@ export function run() {
                     
                     removeAttribute(key) {
                         delete this._attrs[key]
+                    }
+                    
+                    getAttribute(key) {
+                        return this._attrs[key]
                     }
                 }
                 
@@ -305,10 +440,42 @@ export function run() {
                     ele.items[0]._attrs.should.be.eql({"test2": "val2"})
                 })
                 
-                it("should remove attribute on element", function() {
+                it("should get attribute from element", function() {
+                    let ele = new DOMList([new Ele({"test": "val1", "test2": "val2"})])
+                    ele.attr("test2").should.be.exactly("val2")
+                })
+            })
+            
+            
+            describe("#data", function() {
+            
+                class Ele {
+                    constructor(data={}) {
+                        this.dataset = data
+                    }
+                }
+                
+                it("should add data attribute on element", function() {
+                    let ele = new DOMList([new Ele()])
+                    ele.data("test", "val1")
+                    ele.items[0].dataset.should.be.eql({test: "val1"})
+                })
+                
+                it("should add data attributes on element", function() {
+                    let ele = new DOMList([new Ele()])
+                    ele.data({"test": "val1", "test2": "val2"})
+                    ele.items[0].dataset.should.be.eql({"test": "val1", "test2": "val2"})
+                })
+                
+                it("should data add and remove attributes on element", function() {
                     let ele = new DOMList([new Ele({"test": "val1", "test2": "val1"})])
-                    ele.attr("test2")
-                    ele.items[0]._attrs.should.be.eql({"test": "val1"})
+                    ele.data({"test": undefined, "test2": "val2"})
+                    ele.items[0].dataset.should.be.eql({"test2": "val2"})
+                })
+                
+                it("should get data attribute fom element", function() {
+                    let ele = new DOMList([new Ele({"test": "val1", "test2": "val2"})])
+                    ele.data("test2").should.be.exactly("val2")
                 })
             })
             

@@ -1,5 +1,4 @@
-const NOOP = () => {
-}
+const NOOP = () => {}
 
 /**
  * Simple AJAX Http caller that expects JSON response. Handles standard parameter posting and file uploading.
@@ -24,7 +23,7 @@ const NOOP = () => {
  * }).done(data => {
  *     // do something with data
  * }).fail(() => {
- *     // do something when failes
+ *     // do something when failed
  * })
  *
  * @class

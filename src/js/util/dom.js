@@ -125,7 +125,10 @@ export class DOMList {
         } else if (Array.isArray(doms)) {
             this.items = doms
         } else {
-            this.items = [doms]
+            this.items = []
+            if (doms) {
+                this.items.push(doms)
+            }
         }
     }
 
@@ -169,6 +172,44 @@ export class DOMList {
     }
     
     /**
+     * Removes the DOM elements within this DOMList from the document tree
+     */
+    remove() {
+        this.items.forEach(ele => {
+            ele.parentNode.removeChild(ele)
+        })
+        return this
+    }
+    
+    /**
+     * Traverses up the document tree to find the parent the first parent of the DOM elements within this DOMList.
+     * If matcher is not supplied will return the parent of the first DOM element in this DOMList.
+     */
+    parent(matcher) {
+        let result = undefined
+        if (matcher instanceof Matcher) {
+            this.items.some(ele => {
+                let parent = ele.parentNode
+                while (parent) {
+                    if (matcher.test(parent)) {
+                        result = parent
+                        return true
+                    }
+                    parent = parent.parentNode
+                }
+            })
+        } else {
+            this.items.some(ele => {
+                if (ele.parentNode) {
+                    result = ele.parentNode
+                    return true
+                }
+            })
+        }
+        return new DOMList(result)
+    }
+    
+    /**
      * Add the passed style class to all the DOM elements within this DOMList
      * 
      * @param cls The class(s) name to add
@@ -205,22 +246,46 @@ export class DOMList {
         return this
     }
     
+    /**
+     * Sets the passed css key and value on the DOM elements within this DOMList
+     * 
+     * Usage:
+     * let list = new DOMList([dom1, dom2])
+     * list.css("display", "none")
+     * list.css({
+     *    "display": "none",
+     *    "width": "100%"
+     * })
+     */
+    css(key, val) {
+        this.items.forEach(ele => {
+            if (typeof key === "object") {
+                Object.keys(key).forEach(k => {
+                    ele.style[k] = key[k]
+                })
+            } else {
+                ele.style[key] = val
+            }
+        })
+        return this
+    }
 
     /**
-    * Set the passed attribute on all the DOM elements within this DOMList.
+    * Get or set the passed attribute on all the DOM elements within this DOMList.
     *
     * Usage:
     * let list = new DOMList([dom1, dom2])
-    * list.attr("test", "val") // add
+    * list.attr("test", "val") // set
+    * list.attr("test") === "val" // get
     * list.attr({
-    *  test: "val", // add
+    *  test: "val", // set
     *  test2: undefined // remove
     * ) 
-    * list.attr("test") // remove
+    * list.attr("test", undefined) // remove
     */
     attr(key, val) {
-        this.items.forEach(ele => {
-            if (typeof key === "object") {
+        if (typeof key === "object") {
+            this.items.forEach(ele => {
                 Object.keys(key).forEach(k => {
                     if (typeof key[k] === "undefined") {
                         ele.removeAttribute(k)
@@ -228,16 +293,59 @@ export class DOMList {
                         ele.setAttribute(k, key[k])
                     }
                 })
-            } else {
-                if (typeof val === "undefined") {
-                    ele.removeAttribute(key)
-                } else {
-                    ele.setAttribute(key, val)
+            })
+        } else if (typeof val === "undefined") {
+            let result = undefined
+            this.items.some(ele => {
+                let attr = ele.getAttribute(key)
+                if (typeof attr !== "undefined") {
+                    result = attr
+                    return true
                 }
-            }
-        })
+            })
+            return result
+        } else {
+            this.items.forEach(ele => ele.setAttribute(key, val))
+        }
         return this
     }
+    
+    /**
+     * Get or set the passed data attributes on all the DOM elements within this DOMList.
+     *
+     * Usage:
+     * let list = new DOMList([dom1, dom2])
+     * list.data("test", "val") // set
+     * list.data("test") === "val" // get
+     * list.data({test: "val"}) // set
+     * list.data({"test": undefined}) // remove 
+     */
+     data(key, val) {
+         if (typeof key === "object") {
+             this.items.forEach(ele => {
+                 Object.keys(key).forEach(k => {
+                     if (typeof key[k] === "undefined") {
+                         delete ele.dataset[k]
+                     } else {
+                         ele.dataset[k] = key[k]
+                     }
+                 })
+             })
+         } else if (typeof val === "undefined") {
+             let result = undefined
+             this.items.some(ele => {
+                 let data = ele.dataset[key]
+                 if (typeof data !== "undefined") {
+                     result = data
+                     return true
+                 }
+             })
+             return result
+         } else {
+             this.items.forEach(ele => ele.dataset[key] = val);
+         }
+         return this
+     }
      
     /**
      * Registers the event lister on all the DOM elements within the DOMList

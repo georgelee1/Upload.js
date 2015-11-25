@@ -1,4 +1,5 @@
 import {Widget} from "./ui/widget"
+import {Http} from "./util/http"
 
 /**
  * Default options for the UploadJs widget
@@ -8,7 +9,7 @@ const DEFAULTS = {
     "template": {
         "item": "div.item (img)",
         "add": "div.item.new (div.icon.plus)",
-        "actions": "div.actions (div.action.bin (div.trash))",
+        "actions": "div.actions (div.action.del (div.trash))",
         "deleting": "div.spinner div.icon.trash",
         "uploading": "div.spinner div.icon.upload div.progress",
         "done": "div.icon.done (i)",
@@ -16,14 +17,31 @@ const DEFAULTS = {
     },
     "max": 0,
     "deletable": true,
-    "url": {
-        "upload": "...",
-        "delete": "..."
-    },
     "types": {
         "images": ["image/jpg", "image/jpeg", "image/png", "image/gif"]
     },
-    "allowed_types": ["images"]
+    "allowed_types": ["images"],
+    "upload": {
+        "url": function() {
+            return this.dataset.uploadUrl
+        },
+        "param": function() {
+            return this.dataset.uploadParam || "file"
+        }
+    },
+    "delete": {
+        "url": function() {
+            return this.dataset.deleteUrl
+        },
+        "param": function() {
+            return this.dataset.deleteParam || "file"
+        }
+    },
+    "http": function() {
+        return url, params => {
+            return new Http(url, params)
+        }
+    }
 }
 
 /**
@@ -39,37 +57,62 @@ const DEFAULTS = {
 window.UploadJs = class UploadJs {
 
     /**
-     * @param ele The
+     * @param ele The DOM element
      * @param {object} opts - Optional. The widget settings.
      */
     constructor(ele, opts={}) {
-        new Widget(ele, merge(DEFAULTS, opts))
+        let o = clone(DEFAULTS)
+        merge(o, clone(opts))
+        this._widget = new Widget(ele, o)
+    }
+    
+    /**
+     * Register an event listener with UploadJs
+     * 
+     * @param event Event name, can be `upload.added`, `upload.`started`, `upload.progress`, `upload.done`, `upload.failed`, `delete.added`, `delete.started`, `delete.done`, `delete.fail`
+     */
+    on(event, handler) {
+        event.split(" ").forEach(e => {
+            this._widget._addListener(e, handler)
+        })
     }
 }
 
 /**
- * Simple object merging utility. Runs deep. Returns a new object, no modifications
- * are made to the original target and source.
+ * Simple object merging utility. Runs deep. Merges the source into to the target
  *
  * @param target The target object
  * @param source The source object
- * @returns {{}} The new instance of the merged objects
  */
 function merge(target, source) {
-    var clone = {}
-    Object.keys(target).forEach(k => {
-        if (typeof target[k] === "object") {
-            clone[k] = merge({}, target[k])
-        } else {
-            clone[k] = target[k]
-        }
-    })
     Object.keys(source).forEach(k => {
-        if (k in clone && typeof clone[k] === "object" && typeof source[k] === "object") {
-            clone[k] = merge(clone[k], source[k])
+        if (k in target && typeof target[k] === "object" && typeof source[k] === "object") {
+            target[k] = merge(target[k], source[k])
         } else {
-            clone[k] = source[k]
+            target[k] = source[k]
         }
     })
-    return clone
+}
+
+/**
+ * Simple deep object cloner
+ * 
+ * @param ele The object, array, string, etc to clone
+ */
+function clone(ele) {
+    if (Array.isArray(ele)) {
+        let c = []
+        ele.forEach(e => {
+            c.push(clone(e))
+        })
+        return c
+    } else if (typeof ele === "object") {
+        let c = {}
+        Object.keys(ele).forEach(key => {
+            c[key] = clone(ele[key])
+        })
+        return c
+    } else {
+        return ele
+    }
 }

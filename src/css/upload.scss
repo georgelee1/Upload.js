@@ -150,7 +150,7 @@ $spinner-size: 32px;
             left: 0%;
             color: $color-active;
             font-size: $spinner-size / 2;
-            margin-top: - ($spinner-size / 4);
+            margin-top: - ($spinner-size / 4) + 1;
             line-height: $spinner-size / 2;
             width: 100%;
             text-align: center;
@@ -247,7 +247,7 @@ $spinner-size: 32px;
             }
         }
     
-        &:hover {
+        &:hover:not(.static) {
             img {
                 @extend %opaque;
             }
