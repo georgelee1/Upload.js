@@ -11,11 +11,11 @@ See Upload.js in action
 [Download](https://github.com/georgelee1/Upload.js/releases) The latest release of Upload.js and add it to your project
 ```html
 <head>
-   <link rel="stylesheet" href="path/to/css/upload-1.0.0.css" />
+   <link rel="stylesheet" href="path/to/css/uploadjs.css" />
 </head>
 <body>
    ...
-   <script src="path/to/js/upload-1.0.0.js"></script>
+   <script src="path/to/js/uploadjs.js"></script>
 </body>
 ```
 
@@ -27,11 +27,11 @@ bower install uploadjs
 ```
 ```html
 <head>
-   <link rel="stylesheet" href="bower_components/uploadjs/dist/upload-1.0.0.css" />
+   <link rel="stylesheet" href="bower_components/uploadjs/dist/uploadjs.css" />
 </head>
 <body>
    ...
-   <script src="bower_components/uploadjs/dist/upload-1.0.0.js"></script>
+   <script src="bower_components/uploadjs/dist/uploadjs.js"></script>
 </body>
 ```
 
