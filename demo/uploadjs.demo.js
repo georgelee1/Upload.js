@@ -49,5 +49,39 @@ function log(u) {
     });
 }
 
-// Demo 1
-new UploadJs(document.getElementById("upload-demo-1"), {"http": http})
+// Demos
+var index = 1;
+while (index < 7) {
+    var ele = document.getElementById("upload-demo-" + index);
+    if (!ele) {
+        break;
+    }
+    new UploadJs(ele, {"http": http})
+    index++;
+}
+
+new UploadJs(document.getElementById("upload-demo-7"), {"http": http}).on("upload.progress", function(e) {
+    $(this).find(".progress").removeClass("p0 p10 p20 p30 p40 p50 p60 p70 p80 p90 p100").addClass("p" + (Math.floor(e.progress / 10) * 10));
+}).on("upload.done upload.failed", function() {
+    $(this).find(".progress").addClass("done");
+})
+
+function lineSeparator() {
+    var div, ta, text;
+
+    div = document.createElement("div");
+    div.innerHTML = "<textarea>one\ntwo</textarea>";
+    ta = div.firstChild;
+    text = ta.value;
+    return text.indexOf("\r") >= 0 ? "\r\n" : "\n";
+}
+
+new Clipboard('.copy', {
+    text: function(trigger) {
+        var lines = [];
+        $(trigger).siblings(".prettyprint").find("li").each(function(x, li) {
+            lines.push($(li).find("span").text());
+        });
+        return lines.join(lineSeparator());
+    }
+});

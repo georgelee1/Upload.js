@@ -40,6 +40,7 @@ $spinner-size: 32px;
         display: inline-block;
         background-color: $color-background;
         margin-right: 2px;
+        margin-bottom: 2px;
         position: relative;
         overflow: hidden;
         transition: opacity 0.5s, width 0.1s ease 0.5s, margin 0.5s;
@@ -54,17 +55,14 @@ $spinner-size: 32px;
             @extend %dimension;
             cursor: pointer;
             vertical-align: top;
-            position: absolute;
 
             .icon {
                 position: absolute;
                 font-size: 24px;
                 width: 100%;
-                line-height: 24px;
                 font-weight: bold;
                 text-align: center;
                 top: 50%;
-                margin-top: -12px;
                 cursor: pointer;
                 display: block;
                 color: darken(#dedede, 60%)
@@ -119,10 +117,12 @@ $spinner-size: 32px;
             top: 0px;
             left: 0px;
             width: 100%;
-            height: 2px;
-            background-color: $color-active;
+            height: 100%;
+            background: transparent;
+            border-top: 2px solid $color-active;
             transform: translateX(-100%);
             transition: transform 0.2s;
+            border-radius: 0px;
         }
 
         .spinner {
@@ -164,7 +164,7 @@ $spinner-size: 32px;
                 transition: opacity 3s;
                 display: block;
                 font-size: $spinner-size / 2;
-                margin-top: - (($spinner-size / 2) + $done-error-pad);
+                margin-top: -($spinner-size / 2);
 
                 i {
                     padding: $done-error-pad;
@@ -186,7 +186,7 @@ $spinner-size: 32px;
             &.done i::after {
                 content: "\2713";
                 font-size: $spinner-size * 0.8;
-                line-height: $spinner-size;
+                line-height: $spinner-size * 0.8;
                 margin-left: -5px;
             }
 
@@ -197,7 +197,7 @@ $spinner-size: 32px;
             &.error i::after {
                 content: "!";
                 font-size: $spinner-size * 0.8;
-                line-height: $spinner-size;
+                line-height: $spinner-size * 0.8;
             }
         }
 
@@ -210,7 +210,7 @@ $spinner-size: 32px;
         }
 
         .action .trash {
-            font-size: 1.3em;
+            font-size: 1.1em;
         }
 
         &.removed {
@@ -256,5 +256,81 @@ $spinner-size: 32px;
                 transform: translateY(0%);
             }
         }
+    }
+}
+
+.uploadjs.up-fa {
+
+    .icon.error i, .icon.done i, .upload, .trash, .item.new .plus {
+        font: normal normal normal 14px/1 FontAwesome;
+        text-rendering: auto;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    .icon.error i::after {
+        content: "\f12a";
+    }
+
+    .icon.done i::after {
+        content: "\f00c";
+        margin-left: 0px;
+        font-size: $spinner-size * 0.6;
+    }
+
+    .upload::before {
+        content: "\f0ee";
+    }
+
+    .trash::before {
+        content: "\f1f8";
+    }
+    
+    .item.new .plus::before {
+        content: "\f067";
+    }
+}
+
+.uploadjs.up-glyphicons {
+    
+    .icon.error i, .icon.done i, .upload, .item .trash, .item.new .plus {
+        font-family: 'Glyphicons Halflings';
+        font-style: normal;
+        font-weight: 400;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    .icon.error i::after {
+        content: "\e086";
+        font-size: 16px;
+        line-height: 23px;
+    }
+
+    .icon.done i::after {
+        content: "\e013";
+        margin-left: 0px;
+        font-size: $spinner-size / 2;
+    }
+
+    .upload::before {
+        content: "\e027";
+    }
+
+    .item .trash {
+        font-size: 14px;
+    }
+
+    .item .action .trash {
+        position: relative;
+        top: 5px;
+    }
+
+    .item .trash::before {
+        content: "\e020";
+    }
+    
+    .item.new .plus::before {
+        content: "\002b";
     }
 }

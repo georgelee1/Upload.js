@@ -1,0 +1,32 @@
+{
+  "name": "uploadjs",
+  "description": "A simple and clean HTML5 image uploader and remover",
+  "main": [
+    "dist/uploadjs.js",
+    "dist/uploadjs.css",
+  ],
+  "authors": [
+    { name: "George Lee", email: "george@georgelee.me", homepage: "http://www.georgelee.me" }
+  ],
+  "license": "MIT (https://github.com/georgelee1/Upload.js/blob/master/LICENSE)",
+  "keywords": [
+    "image",
+    "upload",
+    "html5"
+  ],
+  "homepage": "http://www.georgelee.me/project/uploadjs",
+  "moduleType": ["globals"],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "src",
+    "demo",
+    "build",
+    "gulpfile.js",
+    "bower.json",
+    "package.json"
+  ]
+}

@@ -4,3 +4,4 @@ node_modules
 .settings
 .tern-project
 .project
+/npm-debug.log

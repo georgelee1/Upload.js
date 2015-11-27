@@ -1,0 +1,191 @@
+@CHARSET "ISO-8859-1";
+
+body {
+   padding-bottom: 15px;
+}
+
+small {
+   display: block;
+}
+
+.row {
+   margin-top: 10px;
+}
+
+h3 {
+   margin-bottom: 20px;
+}
+
+pre {
+   border-radius: 2px;
+   padding-top: 10px !important;
+   padding-bottom: 10px !important;
+}
+
+pre.prettyprint {
+   padding-top: 20px !important;
+   padding-bottom: 20px !important;
+}
+
+li.L0,li.L1,li.L2,li.L3,li.L5,li.L6,li.L7,li.L8 {
+   list-style-type: decimal !important;
+}
+
+ol.linenums {
+   color: #AEAEAE;
+}
+
+.copy {
+   background-color: #ebebeb;
+   padding: 4px 10px;
+   position: absolute;
+   right: 15px;
+   border-radius: 2px;
+   border: 1px solid #888;
+   font-size: 12px;
+   cursor: pointer;
+}
+
+.copy:hover {
+   background-color: #d7d7d7;
+   text-decoration: underline;
+}
+
+.note {
+   margin-top: 15px;
+   border: 1px solid #ccc;
+   border-left: 3px solid #F0A800;
+   border-radius: 2px;
+   padding: 15px;
+}
+
+.block {
+   margin-top: 10px;
+}
+
+.uploadjs.demo7 {
+   border: 1px solid #ccc;
+   padding: 15px;
+   border-radius: 4px;
+   min-height: 130px;
+   position: relative;
+}
+
+.uploadjs.demo7 .item {
+   border: 2px solid rgba(0, 0, 0, 0.5);
+}
+
+.uploadjs.demo7 .item.new {
+   width: 40px;
+   height: 40px;
+   border-radius: 40px;
+   position: absolute;
+   right: 15px;
+   top: 15px;
+   background-color: transparent;
+   border: 2px solid #C40000;
+}
+
+.uploadjs.demo7 .item.new:hover .icon, .uploadjs.demo7 .item .action:hover, .uploadjs.demo7 .item .icon {
+   color: #C40000;
+}
+
+.uploadjs.demo7 .item .icon.done, .uploadjs.demo7 .item .icon.error {
+   color: #FFFFFF;
+}
+
+.uploadjs.demo7 .spinner {
+   border: 2px solid #C40000;
+   border-right-color: transparent;
+}
+
+.uploadjs.demo7 .item.new .icon {
+   color: #454545;
+}
+
+.uploadjs.demo7 .item {
+   border-radius: 100px;
+}
+
+.uploadjs.demo7 .item .actions {
+   text-align: center;
+}
+
+.uploadjs.demo7 .progress {
+   border-radius: 100px;
+   border: none;
+   transform: translateX(0%) !important;
+   -webkit-clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
+   opacity: 1;
+   transition: opacity 0.5s;
+}
+
+.uploadjs.demo7 .progress.done {
+   opacity: 0;
+}
+
+.uploadjs.demo7 .progress::before, .uploadjs.demo7 .progress::after {
+   content: ".";
+   color: transparent;
+   position: absolute;
+   width: 100%;
+   height: 100%;
+   border: 2px solid #C40000;
+   border-radius: 100%;
+   -webkit-clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+   transition: transform 0.2s;
+}
+
+.uploadjs.demo7 .progress.p10::before {
+   transform: rotate(36deg) !important;
+}
+
+.uploadjs.demo7 .progress.p20::before {
+   transform: rotate(72deg) !important;
+}
+
+.uploadjs.demo7 .progress.p30::before {
+   transform: rotate(108deg) !important;
+}
+
+.uploadjs.demo7 .progress.p40::before {
+   transform: rotate(144deg) !important;
+}
+
+.uploadjs.demo7 .progress.p50::before,
+.uploadjs.demo7 .progress.p60::before,
+.uploadjs.demo7 .progress.p70::before,
+.uploadjs.demo7 .progress.p80::before,
+.uploadjs.demo7 .progress.p90::before,
+.uploadjs.demo7 .progress.p100::before, 
+.uploadjs.demo7 .progress.p50::after {
+   transform: rotate(180deg) !important;
+}
+
+.uploadjs.demo7 .progress.p60,
+.uploadjs.demo7 .progress.p70,
+.uploadjs.demo7 .progress.p80,
+.uploadjs.demo7 .progress.p90,
+.uploadjs.demo7 .progress.p100 {
+   -webkit-clip-path: none;
+}
+
+.uploadjs.demo7 .progress.p60::after {
+   transform: rotate(216deg) !important;
+}
+
+.uploadjs.demo7 .progress.p70::after {
+   transform: rotate(252deg) !important;
+}
+
+.uploadjs.demo7 .progress.p80::after {
+   transform: rotate(288deg) !important;
+}
+
+.uploadjs.demo7 .progress.p90::after {
+   transform: rotate(324deg) !important;
+}
+
+.uploadjs.demo7 .progress.p100::after {
+   transform: rotate(360deg) !important;
+}

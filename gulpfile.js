@@ -26,7 +26,7 @@ gulp.task("script", function() {
         .transform(babelify, {presets: ["es2015"]})
         .bundle()
         .on("error", errored)
-        .pipe(source("upload-" + p.version + ".js"))
+        .pipe(source("uploadjs.js"))
         .pipe(buffer())
         .pipe(uglify())
         .pipe(header(fileHeader, p))
@@ -39,7 +39,7 @@ gulp.task("style", function() {
             outputStyle: "compressed"
          }).on("error", errored))
         .pipe(autoprefixer())
-        .pipe(rename("upload-" + p.version + ".css"))
+        .pipe(rename("uploadjs.css"))
         .pipe(header(fileHeader, p))
         .pipe(gulp.dest("dist"));
 })

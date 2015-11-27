@@ -30,6 +30,16 @@
  * o.get("key3", v => {
  *     v === "val3"
  * })
+ * o.get("key1", "key2") === ["val1", "val2]
+ * o.get("key1", "key2", (v1, v2) => {
+ *     v1 === "val1"
+ *     v2 === "val2"
+ * })
+ * o.get("key1", "key3") === ["val1", undefined]
+ * o.get("key1", "key3", (v1, v2) => {
+ *     v1 === "val1"
+ *     v2 === "val3"
+ * })
  *
  * @class
  */
@@ -40,27 +50,54 @@ export class Options {
         this._context = context || this
     }
 
-    get(name, callback) {
-        let val = this._opts
-        name.split("\.").forEach(p => {
-            val = val[p]
+    get(...args) {
+        let names = []
+        let callback = undefined
+        args.forEach(a => {
+            if (typeof a === "string") {
+                names.push(a)
+            } else if (typeof a === "function") {
+                callback = a
+            }
         })
-        if (!("function" === typeof val)) {
-            val = (v => {
-                return () => {
-                    return v
+        
+        let result = []
+        let next = () => {
+            if (names.length === 0) {
+                if (callback) {
+                    callback.apply(this.context, result)
                 }
-            })(val)
-        }
-        if (val.length > 0) {
-            let result = undefined
-            val.apply(this._context, [callback || (v => { result = v })])
-            return result
-        } else {
-            if (callback) {
-                callback.apply(this._context, [val.apply(this._context)])
+                return
+            }
+            let name = names.shift()
+            let val = this._opts
+            name.split("\.").forEach(p => {
+                val = val[p]
+            })
+            if (!("function" === typeof val)) {
+                val = (v => {
+                    return () => {
+                        return v
+                    }
+                })(val)
+            }
+            if (val.length > 0) {
+                val.apply(this._context, [(v => { 
+                    result.push(v)
+                    next()
+                })])
             } else {
-                return val.apply(this._context)
+                result.push(val.apply(this._context))
+                next()
+            }
+        }
+        next()
+
+        if (!callback) {
+            if (result.length > 1) {
+                return result
+            } else {
+                return result[0]
             }
         }
     }

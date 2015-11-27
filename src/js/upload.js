@@ -1,5 +1,6 @@
 import {Widget} from "./ui/widget"
 import {Http} from "./util/http"
+import {clone, merge} from "./util/object"
 
 /**
  * Default options for the UploadJs widget
@@ -15,12 +16,21 @@ const DEFAULTS = {
         "done": "div.icon.done (i)",
         "error": "div.icon.error (i)"
     },
-    "max": 0,
-    "deletable": true,
+    "max": function() {
+        return parseInt(this.dataset.uploadMax) || 0
+    },
+    "deletable": function() {
+        return this.dataset.uploadDeletable !== "false"
+    },
     "types": {
         "images": ["image/jpg", "image/jpeg", "image/png", "image/gif"]
     },
-    "allowed_types": ["images"],
+    "allowed_types": function() {
+        if (typeof this.dataset.uploadAllowedTypes === "undefined") {
+            return ["images"]
+        }
+        return this.dataset.uploadAllowedTypes.split(",")
+    },
     "upload": {
         "url": function() {
             return this.dataset.uploadUrl
@@ -75,44 +85,6 @@ window.UploadJs = class UploadJs {
         event.split(" ").forEach(e => {
             this._widget._addListener(e, handler)
         })
-    }
-}
-
-/**
- * Simple object merging utility. Runs deep. Merges the source into to the target
- *
- * @param target The target object
- * @param source The source object
- */
-function merge(target, source) {
-    Object.keys(source).forEach(k => {
-        if (k in target && typeof target[k] === "object" && typeof source[k] === "object") {
-            target[k] = merge(target[k], source[k])
-        } else {
-            target[k] = source[k]
-        }
-    })
-}
-
-/**
- * Simple deep object cloner
- * 
- * @param ele The object, array, string, etc to clone
- */
-function clone(ele) {
-    if (Array.isArray(ele)) {
-        let c = []
-        ele.forEach(e => {
-            c.push(clone(e))
-        })
-        return c
-    } else if (typeof ele === "object") {
-        let c = {}
-        Object.keys(ele).forEach(key => {
-            c[key] = clone(ele[key])
-        })
-        return c
-    } else {
-        return ele
+        return this
     }
 }

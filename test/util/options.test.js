@@ -13,7 +13,7 @@ export function run() {
             key3: function (done) {
                 setTimeout(() => {
                     done("val3")
-                }, 1000)
+                }, 200)
             },
             key4: {
                 key5: "val5"
@@ -53,17 +53,39 @@ export function run() {
             })
 
             it("callback should be called with value for function value with done", function(done) {
-                this.timeout(1100)
+                this.timeout(250)
                 let start = Date.now()
-                o.get("key3", v => {
-                    (Date.now() - start).should.be.approximately(1000, 20)
+                should(o.get("key3", v => {
+                    (Date.now() - start).should.be.approximately(200, 20)
                     should(v).be.exactly("val3")
                     done()
-                })
+                })).be.Undefined()
             })
 
             it("should return value for nested value", function() {
                 should(o.get("key4.key5")).be.exactly("val5")
+            })
+            
+            it("should return values for multiple keys", function() {
+                o.get("key1", "key2").should.be.eql(["val1", "val2"])
+            })
+            
+            it("callback should be called with multiple values, one plain, one function", function() {
+                let result, callback = (...args) => {
+                    result = args
+                }
+                should(o.get("key1", "key2", callback)).be.Undefined()
+                result.should.be.eql(["val1", "val2"])
+            })
+            
+            it("callback should be called with multiple values, one plain, one function with done", function(done) {
+                this.timeout(1100)
+                let start = Date.now()
+                should(o.get("key1", "key3", (...args) => {
+                    (Date.now() - start).should.be.approximately(200, 20)
+                    should(args).be.eql(["val1", "val3"])
+                    done()
+                })).be.Undefined()
             })
         })
     })

@@ -1,6 +1,8 @@
 import {Options} from "../util/options"
 import {Queue} from "../util/queue"
 import {DOMList, Matcher, SimpleDOMParser} from "../util/dom"
+import {UploadItem} from "./upload"
+import {DeleteItem} from "./delete"
 
 /**
  * Why bother instantiating a Matcher when you can call the short convenience function
@@ -27,13 +29,35 @@ export class Widget {
         this._ele = up(ele)
         this._opts = new Options(opts, ele)
         this._size = 0
-        this._max = this._opts.get("max")
         this._queue = new Queue(this._next, {
-            delay: this._opts.get("delay")
+            delay: 200
         })
         this._parser = new SimpleDOMParser()
         this._listeners = {}
-        this._init()
+        
+        this._opts.get("deletable", "max", "allowed_types", "types", (deletable, max, allowedTypes, types) => {
+            this._deletable = deletable !== false
+            this._max = max
+            
+            this._allowedTypes = []
+            if (typeof allowedTypes === "string") {
+                allowedTypes = allowedTypes.split(",")
+            }
+            if (Array.isArray(allowedTypes)) {
+                allowedTypes.forEach(type => {
+                    if (Array.isArray(types[type])) {
+                        types[type].forEach(t => {
+                            this._allowedTypes.push(t.toLowerCase())
+                        })
+                    } else {
+                        this._allowedTypes.push(type.toLowerCase())
+                    }
+                })
+            }
+            
+            this._types
+            this._init()
+        })
     }
 
     /**
@@ -50,10 +74,10 @@ export class Widget {
         this._ele.find("img").each(image => {
             let img = up(image)
             let id = img.data("uploadImageId")
-            if (typeof id !== "undefined" && (!this._max || this._size < this._max)) {
+            if (!this._max || this._size < this._max) {
                 let item = this._parser.parse(this._opts.get("template.item"))
                 item.find("img").attr("src", img.attr("src"))
-                if (this._opts.get("deletable") !== false) {
+                if (this._deletable && typeof id !== "undefined") {
                     this._parser.parse(this._opts.get("template.actions")).appendTo(item)
                 } else {
                     item.addClass("static")
@@ -76,21 +100,6 @@ export class Widget {
         }
         this._addListener("upload.failed", reduceAndUpdate)
         this._addListener("delete.done", reduceAndUpdate)
-        
-        this._allowedTypes = []
-        let allowedTypes = this._opts.get("allowed_types")
-        let types = this._opts.get("types")
-        if (Array.isArray(allowedTypes)) {
-            allowedTypes.forEach(type => {
-                if (Array.isArray(types[type])) {
-                    types[type].forEach(t => {
-                        this._allowedTypes.push(t.toLowerCase())
-                    })
-                } else {
-                    this._allowedTypes.push(type.toLowerCase())
-                }
-            })
-        }
         
         this._update()
     }
@@ -176,234 +185,5 @@ export class Widget {
                 this._add.addClass("hide")
             }
         }
-    }
-}
-
-/**
-* Very simple class to run a handler function with the latest value passed as the only argument. The handler will be called at a set delay, starting from
-* the first time the value is set. After each handler function invocation the value is reset. The handler will stop being called if value has not then
-* been set to another value.
-*
-* Usage:
-* let update = new Update(v => console.info(v), 1000)
-* update.value = "test1"
-* update.value = "test2"
-* // 1 second later, console print "test2"
-*
-* @class
-*/
-class Update {
-    /**
-     * @param {function} handler - The handler function to be called with the value as the only argument
-     * @param {number} delay - The interval delay between each call of the handler in milliseconds
-     */
-    constructor(handler, delay=16) {
-        this._handler = handler
-        this._delay = delay
-    }
-    
-    set value(val) {
-        this._val = val
-        if (!this._interval && typeof this._val !== "undefined") {
-            this._interval = setInterval(this._fire.bind(this), this._delay)
-        }
-    }
-    
-    _fire() {
-        if (typeof this._val === "undefined") {
-            clearInterval(this._interval)
-            this._interval = false
-        } else {
-            this._handler.call(this, this._val)
-            delete this._val
-        }
-    }
-}
-
-class Item {
-    constructor(listeners=[]) {
-        this._listeners = listeners
-    }
-    
-    /**
-     * Triggers the registered events with the passed arguments
-     */
-    _trigger(event) {
-        if (this._listeners && Array.isArray(this._listeners[event.type])) {
-            this._listeners[event.type].forEach(listener => {
-                if (typeof listener === "function") {
-                    listener.call(null, event)
-                }
-            })
-        }
-    }
-}
-
-/**
- * UploadItem handles the uploading of a file and the updating of the DOM elements
- */
-class UploadItem extends Item {
-    constructor(ele, file, widget, listeners) {
-        super(listeners)
-        this._ele = ele
-        this._file = file
-        this._widget = widget
-        this._fin = false
-        this._up = new Update(this._update.bind(this), 200)
-        
-        this._trigger({type: "upload.added", file: this._file})
-    }
-    
-    /**
-     * Starts the uploading
-     */
-    run(done) {
-        this._trigger({type: "upload.started", file: this._file})
-        this._dom_progress = this._ele.find(".progress")
-        
-        let item = this
-        this._widget._opts.get("upload.url", url => {
-            item._widget._opts.get("http")(url, {[item._widget._opts.get("upload.param")]: item._file})
-                .progress(item._progress.bind(item))
-                .done(item._done.bind(item, done))
-                .fail(item._fail.bind(item, done))
-        })
-    }
-    
-    /**
-     * Triggered by the HTTP with updates on the progress of the upload
-     */
-    _progress(percent) {
-        if (!this._fin) {
-            this._up.value = percent
-            this._trigger({type: "upload.progress", file: this._file, progress: percent})
-        }
-    }
-    
-    /**
-     * Called by the Update to apply the progress percent
-     */
-    _update(percent) {
-        if (!this._fin) {
-            this._dom_progress.css("transform", `translateX(-${100 - percent}%)`)
-        }
-    }
-    
-    /**
-     * Triggered by the HTTP when the upload has successfully completed
-     */
-    _done(done, data) {
-        if (!data.success) {
-            this._fail(done)
-            return
-        }
-        
-        this._update(0)
-        this._fin = true
-        this._ele.removeClass("uploading")
-        let complete = this._widget._parser.parse(this._widget._opts.get("template.done")).appendTo(this._ele)
-        
-        let id = data["upload-image-id"] || data["uploadImageId"]
-        if (typeof id !== "undefined") {
-            this._ele.data("uploadImageId", id)
-            if (this._widget._opts.get("deletable") !== false) {
-                this._widget._parser.parse(this._widget._opts.get("template.actions")).appendTo(this._ele)
-            } else {
-                this._ele.addClass("static")
-            }
-        }
-        
-        setTimeout(() => {
-            complete.addClass("going")
-            setTimeout(() => {
-                complete.remove()
-            }, 3000)
-        }, 2000)
-        
-        this._trigger({type: "upload.done", file: this._file, id})
-        done()
-    }
-    
-    /**
-     * Triggered by the HTTP when the upload has failed
-     */
-    _fail(done) {
-        this._update(0)
-        this._fin = true
-        this._ele.addClass("stopped")
-        this._widget._parser.parse(this._widget._opts.get("template.error")).appendTo(this._ele)
-        
-        setTimeout(() => {
-            this._ele.addClass("removed")
-            setTimeout(() => {
-                this._ele.remove()
-            }, 1000)
-        }, 10000)
-        
-        this._trigger({type: "upload.failed", file: this._file})
-        done()
-    }
-}
-
-/**
- * DeleteItem handles the deleting of a file and the updating of the DOM elements
- */
-class DeleteItem extends Item {
-    constructor(ele, widget, listeners) {
-        super(listeners)
-        this._ele = ele
-        this._widget = widget
-        this._id = this._ele.data("uploadImageId")
-        
-        this._trigger({type: "delete.added", id: this._id})
-    }
-    
-    /**
-     * Starts the deletion
-     */
-    run(done) {
-        this._trigger({type: "delete.started", id: this._id})
-        let item = this
-        this._widget._opts.get("delete.url", url => {
-            item._widget._opts.get("http")(url, {[item._widget._opts.get("delete.param")]: item._id})
-                .done(item._done.bind(item, done))
-                .fail(item._fail.bind(item, done))
-        })
-    }
-    
-    /**
-     * Triggered by the HTTP when the deletion has successfully completed
-     */
-    _done(done, data) {
-        if (!data.success) {
-            this._fail(done)
-            return
-        }
-        
-        this._ele.removeClass("removing").addClass("removed")
-        setTimeout(() => {
-            this._ele.remove()
-        }, 1000)
-        
-        this._trigger({type: "delete.done", id: this._id})
-        done()
-    }
-    
-    /**
-     * Triggered by the HTTP when the deletion has failed
-     */
-    _fail(done) {
-        this._ele.removeClass("removing")
-        let error = this._widget._parser.parse(this._widget._opts.get("template.error")).appendTo(this._ele)
-        
-        setTimeout(() => {
-            error.addClass("going")
-            setTimeout(() => {
-                error.remove()
-            }, 3000)
-        }, 2000)
-        
-        this._trigger({type: "delete.failed", id: this._id})
-        done()
     }
 }
