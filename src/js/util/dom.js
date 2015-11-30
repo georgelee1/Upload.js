@@ -51,6 +51,9 @@ export class SimpleDOMParser {
         return nodes.clone()
     }
 
+    /**
+     * @private
+     */
     _build(val) {
         let nodes = [], node = false, hierarchy = []
 

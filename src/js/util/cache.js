@@ -74,6 +74,9 @@ export class Cache {
         }
     }
 
+    /**
+     * @private
+     */
     _evict(entry) {
         if (entry) {
             let prev = entry.prev
@@ -83,6 +86,9 @@ export class Cache {
         }
     }
 
+    /**
+     * @private
+     */
     _insertAtTail(entry) {
         if (entry) {
             if (entry.next) {

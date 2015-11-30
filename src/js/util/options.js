@@ -1,7 +1,9 @@
 /**
- * Options class provides a wrap around an options object map where options can be defined as
+ * Options class provides a wrap around option object maps where options can be defined as
  * functions which take an optional done callback to allow lazy asynchronous loading of option
- * values.
+ * values. The options argument in the constructor can be an Array of objects where the objects
+ * are searched for value from front to end, effectively giving objects nearer the front of the
+ * Array greater precedence.
  *
  * Usage:
  * let opts = {
@@ -46,7 +48,7 @@
 export class Options {
 
     constructor(opts, context) {
-        this._opts = opts
+        this._opts = Array.isArray(opts) ? opts : [opts]
         this._context = context || this
     }
 
@@ -69,10 +71,20 @@ export class Options {
                 }
                 return
             }
-            let name = names.shift()
-            let val = this._opts
-            name.split("\.").forEach(p => {
-                val = val[p]
+            let name = names.shift().split("\.")
+            let val = undefined
+            this._opts.some(opts => {
+                let find = opts
+                name.forEach(p => {
+                    if (typeof find !== "undefined") {
+                        find = find[p]
+                    }
+                })
+                if (typeof find !== "undefined") {
+                    val = find
+                    return true
+                }
+                return false
             })
             if (!("function" === typeof val)) {
                 val = (v => {

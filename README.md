@@ -1,5 +1,5 @@
 # Upload.js
-A simple and clean HTML5 image uploader and remover
+A simple and clean HTML5, dependency free, image uploader and remover
 
 ---
 ## <a href="#demo" name="demo"></a>[Demo](http://www.georgelee.me/project/uploadjs)
@@ -34,6 +34,12 @@ bower install uploadjs
    <script src="bower_components/uploadjs/dist/uploadjs.js"></script>
 </body>
 ```
+
+---
+### Dependencies
+**None, zero, zilch, zip, nadda**
+
+This project is designed to be standalone. We don't force your project to have to include any other third party libraries.
 
 ---
 ### Browser Support

@@ -25,7 +25,7 @@ function up(arg) {
  */
 export class Widget {
 
-    constructor(ele, opts) {
+    constructor(ele, ...opts) {
         this._ele = up(ele)
         this._opts = new Options(opts, ele)
         this._size = 0
@@ -65,6 +65,8 @@ export class Widget {
      * Creates and appends an INPUT of type file for the user to be able to pick files.
      * Adjusts any current IMG elements in the containing element.
      * Registers appropriate listeners.
+     * 
+     * @private
      */
     _init() {
         this._ele.addClass("uploadjs")
@@ -73,11 +75,10 @@ export class Widget {
 
         this._ele.find("img").each(image => {
             let img = up(image)
-            let id = img.data("uploadImageId")
             if (!this._max || this._size < this._max) {
                 let item = this._parser.parse(this._opts.get("template.item"))
                 item.find("img").attr("src", img.attr("src"))
-                if (this._deletable && typeof id !== "undefined") {
+                if (this._deletable && typeof img.data("uploadImageId") !== "undefined") {
                     this._parser.parse(this._opts.get("template.actions")).appendTo(item)
                 } else {
                     item.addClass("static")
@@ -107,6 +108,7 @@ export class Widget {
     /**
      * Registers a listener with this Widget
      * 
+     * @private
      * @param on The event to listen for
      * @param handler The handler function that gets called
      */
@@ -124,6 +126,8 @@ export class Widget {
      * Fired when the user has selected files from the file selection.
      * Adds DOM elements to the containing elements in an uploading state
      * Adds upload to the queue
+     * 
+     * @private
      */
     _picked() {
         let files = this._picker.files
@@ -150,6 +154,8 @@ export class Widget {
     
     /**
      * Returns true if the passed file is an allowed type
+     * 
+     * @private
      */
     _typeAllowed(file) {
         return this._allowedTypes.indexOf(file.type) >= 0
@@ -159,6 +165,8 @@ export class Widget {
      * Fired when the user has clicked the delete action from the actions bar
      * Sets the DOM element into a removing state
      * Adds deletion to the queue
+     * 
+     * @private
      */
     _delete(e) {
         let item = up(e.target).parent(m().css("item")).addClass("removing")
@@ -169,6 +177,8 @@ export class Widget {
     
     /**
      * Triggered from the queue to handle the next item
+     * 
+     * @private
      */
     _next(item, done) {
         item.run(done)
@@ -176,6 +186,8 @@ export class Widget {
     
     /**
      * Adjusts the visibility of the "add" action based on the max option and the current size
+     * 
+     * @private
      */
     _update() {
         if (this._max) {

@@ -301,10 +301,7 @@ new UploadJs(document.getElementById("upload-demo-7"), {"http": http}).on("uploa
                   <div class="copy" title="Copy to clipboard">Copy</div>
                   <pre class="prettyprint lang-css linenums">
 .uploadjs.demo7 {
-   border: 1px solid #ccc;
-   padding: 15px;
-   border-radius: 4px;
-   min-height: 130px;
+   min-height: 100px;
    position: relative;
 }
 
@@ -317,8 +314,8 @@ new UploadJs(document.getElementById("upload-demo-7"), {"http": http}).on("uploa
    height: 40px;
    border-radius: 40px;
    position: absolute;
-   right: 15px;
-   top: 15px;
+   right: 0px;
+   top: 0px;
    background-color: transparent;
    border: 1px solid #454545;
 }
@@ -340,8 +337,8 @@ new UploadJs(document.getElementById("upload-demo-7"), {"http": http}).on("uploa
    color: #454545;
 }
 
-.uploadjs.demo7 .item {
-   border-radius: 100px;
+.uploadjs.demo7 .item, .uploadjs.demo7 .item img {
+   border-radius: 100%;
 }
 
 .uploadjs.demo7 .item .actions {
@@ -352,7 +349,7 @@ new UploadJs(document.getElementById("upload-demo-7"), {"http": http}).on("uploa
    border-radius: 100px;
    border: none;
    transform: translateX(0%) !important;
-   -webkit-clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
+   clip: rect(0px, 100px, 100px, 50px);
    opacity: 1;
    transition: opacity 0.5s;
 }
@@ -369,7 +366,7 @@ new UploadJs(document.getElementById("upload-demo-7"), {"http": http}).on("uploa
    height: 100%;
    border: 2px solid #C40000;
    border-radius: 100%;
-   -webkit-clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+   clip: rect(0px, 50px, 100px, 0px);
    transition: transform 0.2s;
 }
 
@@ -404,7 +401,7 @@ new UploadJs(document.getElementById("upload-demo-7"), {"http": http}).on("uploa
 .uploadjs.demo7 .progress.p80,
 .uploadjs.demo7 .progress.p90,
 .uploadjs.demo7 .progress.p100 {
-   -webkit-clip-path: none;
+   clip: auto;
 }
 
 .uploadjs.demo7 .progress.p60::after {
@@ -473,6 +470,10 @@ new UploadJs(div);
    height: 200px;
    vertical-align: middle;
    border-radius: 2px;
+}
+
+.uploadjs.demo8 .item.removed {
+   width: 0%;
 }
 
 .uploadjs.demo8 .item.new {

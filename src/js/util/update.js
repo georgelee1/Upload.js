@@ -20,14 +20,20 @@ export class Update {
         this._handler = handler
         this._delay = delay
     }
-    
+
+    /**
+     * Sets the current value for the updater that is going to passed to the handler when the time is right
+     */
     set value(val) {
         this._val = val
         if (!this._interval && typeof this._val !== "undefined") {
             this._interval = setInterval(this._fire.bind(this), this._delay)
         }
     }
-    
+
+    /**
+     * @private
+     */
     _fire() {
         if (typeof this._val === "undefined") {
             clearInterval(this._interval)

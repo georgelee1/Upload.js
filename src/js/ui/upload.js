@@ -1,5 +1,5 @@
 import {Item} from "./item"
-import {Update} from "./update"
+import {Update} from "../util/update"
 
 /**
  * UploadItem handles the uploading of a file and the updating of the DOM elements
@@ -33,6 +33,8 @@ export class UploadItem extends Item {
     
     /**
      * Triggered by the HTTP with updates on the progress of the upload
+     * 
+     * @private
      */
     _progress(percent) {
         if (!this._fin) {
@@ -43,6 +45,8 @@ export class UploadItem extends Item {
     
     /**
      * Called by the Update to apply the progress percent
+     * 
+     * @private
      */
     _update(percent) {
         if (!this._fin) {
@@ -53,6 +57,8 @@ export class UploadItem extends Item {
     
     /**
      * Triggered by the HTTP when the upload has successfully completed
+     * 
+     * @private
      */
     _done(done, data) {
         if (!data.success) {
@@ -88,6 +94,8 @@ export class UploadItem extends Item {
     
     /**
      * Triggered by the HTTP when the upload has failed
+     * 
+     * @private
      */
     _fail(done) {
         this._update(0)

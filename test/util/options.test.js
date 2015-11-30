@@ -27,6 +27,10 @@ export function run() {
             it("should return value for plain value", function() {
                 o.get("key1").should.be.exactly("val1")
             })
+            
+            it("should return undefined for non existing property", function() {
+                should(o.get("key5.key6")).be.Undefined()
+            })
 
             it("callback should be called with value for plain value", function() {
                 let result, callback = v => {
@@ -86,6 +90,26 @@ export function run() {
                     should(args).be.eql(["val1", "val3"])
                     done()
                 })).be.Undefined()
+            })
+            
+            it("should get the value from the correct options object", function() {
+                let o = new Options([{
+                    "test2": {
+                        "test2a": 6
+                    },
+                    "test3": [7, 8]
+                },{
+                    "test": 1,
+                    "test2": {
+                        "test2a": 2,
+                        "test2b": 3
+                    },
+                    "test3": [4, 5]
+                }])
+                o.get("test").should.be.exactly(1)
+                o.get("test2.test2a").should.be.exactly(6)
+                o.get("test2.test2b").should.be.exactly(3)
+                o.get("test3").should.be.eql([7, 8])
             })
         })
     })

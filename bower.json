@@ -1,6 +1,6 @@
 {
   "name": "uploadjs",
-  "description": "A simple and clean HTML5 image uploader and remover",
+  "description": "A simple and clean HTML5, dependency free, image uploader and remover",
   "main": [
     "dist/uploadjs.js",
     "dist/uploadjs.css",

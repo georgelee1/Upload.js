@@ -27,6 +27,8 @@ export class DeleteItem extends Item {
     
     /**
      * Triggered by the HTTP when the deletion has successfully completed
+     * 
+     * @private
      */
     _done(done, data) {
         if (!data.success) {
@@ -45,6 +47,8 @@ export class DeleteItem extends Item {
     
     /**
      * Triggered by the HTTP when the deletion has failed
+     * 
+     * @private
      */
     _fail(done) {
         this._ele.removeClass("removing")

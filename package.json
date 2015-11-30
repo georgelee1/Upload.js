@@ -1,7 +1,7 @@
 {
   "name": "uploadjs",
   "version": "1.0.0",
-  "description": "A simple and clean HTML5 image uploader and remover",
+  "description": "A simple and clean HTML5, dependency free, image uploader and remover",
   "homepage": "https://github.com/georgelee1/Upload.js",
   "author": "George Lee (http://www.georgelee.me)",
   "license": "MIT (https://github.com/georgelee1/Upload.js/blob/master/LICENSE)",

@@ -1,4 +1,4 @@
-import {Update} from "../../src/js/ui/update"
+import {Update} from "../../src/js/util/update"
 var should = require("should")
 
 export function run() {

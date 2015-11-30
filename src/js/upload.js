@@ -1,6 +1,5 @@
 import {Widget} from "./ui/widget"
 import {Http} from "./util/http"
-import {clone, merge} from "./util/object"
 
 /**
  * Default options for the UploadJs widget
@@ -71,9 +70,7 @@ window.UploadJs = class UploadJs {
      * @param {object} opts - Optional. The widget settings.
      */
     constructor(ele, opts={}) {
-        let o = clone(DEFAULTS)
-        merge(o, clone(opts))
-        this._widget = new Widget(ele, o)
+        this._widget = new Widget(ele, opts, DEFAULTS)
     }
     
     /**
