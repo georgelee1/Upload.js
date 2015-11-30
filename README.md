@@ -87,7 +87,7 @@ new UploadJs(myDiv, options)
 
 **Via html data attributes**
 ```html
-<div id="my-uploadjs" data-upload-url="/upload" data-upload-delete="/delete" />
+<div id="my-uploadjs" data-upload-url="/upload" data-delete-url="/delete" />
 ```
 
 #### Available Options
@@ -104,7 +104,7 @@ new UploadJs(myDiv, options)
 
 #### Callback
 
-When defining the options via the javascript api, option values can be defined using a `function`. There is an optional `done` callback that can be passed to the options function that should be called, passing the option value, when the option value has been loaded. If the `done` callback is not defined a function parameter then the option value should be returned.
+When defining the options via the javascript API, option values can be defined using a `function`. There is an optional `done` callback that can be passed to the options function that should be called, passing the option value, when the option value has been loaded. If the `done` callback is not defined as a function parameter then the option value should be returned.
 
 **Option defined as function without callback**
 ```javascript
@@ -143,7 +143,7 @@ By default the icons used in `UploadJs` are unicode symbol characters
 
 **&#x2713; &#x21E1; &#x2718; !**
 
-These can be changed to make the widget look a little nicer to use icons from either [font-awesome](http://fortawesome.github.io/Font-Awesome/) or [glyphicons](http://glyphicons.com/). Simply add the appropriate css class to the `div` element. Checkout the [demo](#demo) to see these in action.
+These can be changed to make the widget look a little nicer by using icons from either [font-awesome](http://fortawesome.github.io/Font-Awesome/) or [glyphicons](http://glyphicons.com/). Simply add the appropriate css class to the `div` element. Checkout the [demo](#demo) to see these in action.
 
 **font awesome**
 ```html
