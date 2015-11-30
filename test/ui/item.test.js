@@ -14,7 +14,7 @@ export function run() {
                         "test" : [handler],
                         "test2" : [handler]
                 }
-                let item = new Item(listeners);
+                let item = new Item({}, listeners);
                 item._trigger({type: "test"})
                 item._trigger({type: "test"})
                 item._trigger({type: "another"})

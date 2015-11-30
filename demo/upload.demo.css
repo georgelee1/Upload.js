@@ -63,6 +63,15 @@ ol.linenums {
    margin-top: 10px;
 }
 
+.uploadjs-demo7 h3 {
+   margin-bottom: 0px;
+}
+
+.uploadjs-demo7 em {
+   margin-bottom: 15px;
+   display: block;
+}
+
 .uploadjs.demo7 {
    border: 1px solid #ccc;
    padding: 15px;
@@ -72,7 +81,7 @@ ol.linenums {
 }
 
 .uploadjs.demo7 .item {
-   border: 2px solid rgba(0, 0, 0, 0.5);
+   border: 1px solid rgba(0, 0, 0, 0.5);
 }
 
 .uploadjs.demo7 .item.new {
@@ -83,7 +92,7 @@ ol.linenums {
    right: 15px;
    top: 15px;
    background-color: transparent;
-   border: 2px solid #C40000;
+   border: 1px solid #454545;
 }
 
 .uploadjs.demo7 .item.new:hover .icon, .uploadjs.demo7 .item .action:hover, .uploadjs.demo7 .item .icon {
@@ -188,4 +197,17 @@ ol.linenums {
 
 .uploadjs.demo7 .progress.p100::after {
    transform: rotate(360deg) !important;
+}
+
+.uploadjs.demo8 .item {
+   width: 200px;
+   height: 200px;
+   vertical-align: middle;
+   border-radius: 2px;
+}
+
+.uploadjs.demo8 .item.new {
+   display: block;
+   width: 100%;
+   height: 30px;
 }

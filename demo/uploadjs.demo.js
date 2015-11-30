@@ -51,7 +51,12 @@ function log(u) {
 
 // Demos
 var index = 1;
-while (index < 7) {
+var skip = [7];
+while (true) {
+    if (skip.indexOf(index) >= 0) {
+        index++;
+        continue;
+    }
     var ele = document.getElementById("upload-demo-" + index);
     if (!ele) {
         break;
