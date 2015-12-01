@@ -40,10 +40,10 @@ const DEFAULTS = {
     },
     "delete": {
         "url": function() {
-            return this.dataset.deleteUrl
+            return this.dataset.uploadDeleteUrl
         },
         "param": function() {
-            return this.dataset.deleteParam || "file"
+            return this.dataset.uploadDeleteParam || "file"
         }
     },
     "http": function() {

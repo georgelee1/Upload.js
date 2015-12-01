@@ -15,6 +15,10 @@
     "html5"
   ],
   "homepage": "http://www.georgelee.me/project/uploadjs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/georgelee1/Upload.js.git"
+  },
   "moduleType": ["globals"],
   "ignore": [
     "**/.*",

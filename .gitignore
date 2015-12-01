@@ -5,3 +5,4 @@ node_modules
 .tern-project
 .project
 /npm-debug.log
+.README.md.html
