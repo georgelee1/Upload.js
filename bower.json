@@ -3,7 +3,7 @@
   "description": "A simple and clean HTML5, dependency free, image uploader and remover",
   "main": [
     "dist/uploadjs.js",
-    "dist/uploadjs.css",
+    "dist/uploadjs.css"
   ],
   "authors": [
     { name: "George Lee", email: "george@georgelee.me", homepage: "http://www.georgelee.me" }
