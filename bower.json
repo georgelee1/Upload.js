@@ -6,7 +6,7 @@
     "dist/uploadjs.css"
   ],
   "authors": [
-    { name: "George Lee", email: "george@georgelee.me", homepage: "http://www.georgelee.me" }
+    { "name": "George Lee", "email": "george@georgelee.me", "homepage": "http://www.georgelee.me" }
   ],
   "license": "MIT (https://github.com/georgelee1/Upload.js/blob/master/LICENSE)",
   "keywords": [
