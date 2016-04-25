@@ -6,3 +6,4 @@ node_modules
 .project
 /npm-debug.log
 .README.md.html
+.DS_Store

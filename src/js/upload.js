@@ -47,7 +47,7 @@ const DEFAULTS = {
         }
     },
     "http": function() {
-        return url, params => {
+        return (url, params) => {
             return new Http(url, params)
         }
     }
