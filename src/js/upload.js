@@ -36,6 +36,17 @@ const DEFAULTS = {
         },
         "param": function() {
             return this.dataset.uploadParam || "file"
+        },
+        "additionalParams": function() {
+            var additional = {};
+            console.info('DATASET', this.dataset);
+            Object.keys(this.dataset).forEach((key) => {
+                var prefix = "uploadAdditionalParam";
+                if (key.startsWith(prefix)) {
+                    additional[key.substr(prefix.length)] = this.dataset[key];
+                }
+            });
+            return additional;
         }
     },
     "delete": {
@@ -44,6 +55,16 @@ const DEFAULTS = {
         },
         "param": function() {
             return this.dataset.uploadDeleteParam || "file"
+        },
+        "additionalParams": function() {
+            var additional = {};
+            Object.keys(this.dataset).forEach((key) => {
+                var prefix = "deleteAdditionalParam";
+                if (key.startsWith(prefix)) {
+                    additional[key.substr(prefix.length)] = this.dataset[key];
+                }
+            });
+            return additional;
         }
     },
     "http": function() {

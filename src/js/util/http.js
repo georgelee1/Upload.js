@@ -80,14 +80,12 @@ export class Http {
      * @private
      */
     _post() {
-        let type = "application/x-www-form-urlencoded";
         let data = new FormData();
         for (let key in this._params) {
             let val = this._params[key]
             if (Array.isArray(val)) {
                 val.forEach(v => {
                     if (v.type && v.name) {
-                        type = "multipart/form-data"
                         data.append(key, v, v.name)
                     } else {
                         data.append(key, v)
@@ -95,7 +93,6 @@ export class Http {
                 })
             } else {
                 if (val.type && val.name) {
-                    type = "multipart/form-data"
                     data.append(key, val, val.name)
                 } else {
                     data.append(key, val)
@@ -123,7 +120,6 @@ export class Http {
         }, false);
 
         request.open("POST", this._url, true);
-        request.setRequestHeader("Content-Type", type);
         request.send(data);
     }
 }

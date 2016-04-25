@@ -61,7 +61,7 @@ while (true) {
     if (!ele) {
         break;
     }
-    new UploadJs(ele, {"http": http})
+    new UploadJs(ele, location.host === 'localhost' ? {} : {"http": http});
     index++;
 }
 
