@@ -59,7 +59,7 @@ const DEFAULTS = {
         "additionalParams": function() {
             var additional = {};
             Object.keys(this.dataset).forEach((key) => {
-                var prefix = "deleteAdditionalParam";
+                var prefix = "uploadDeleteAdditionalParam";
                 if (key.startsWith(prefix)) {
                     additional[key.substr(prefix.length)] = this.dataset[key];
                 }

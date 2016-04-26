@@ -2,10 +2,28 @@
 A simple and clean HTML5, dependency free, image uploader and remover
 
 ---
+## Contents
+* [Demo](#demo)
+* [Install](#install)
+* [Dependencies](#dependencies)
+* [Browser Support](#browser-support)
+* [Usage](#usage)
+* [Initial Images](#initial-images)
+* [Options](#options)
+    * [Available Options](#options-available)
+    * [Callback](#options-callback)
+    * [Additional Http Parameters](#options-additional-params) 
+* [Methods](#methods)
+* [Styling](#styling)
+* [Contributing](#contributing)
+
+---
+<a href="#demo" name="demo"></a>
 ## <a href="#demo" name="demo"></a>[Demo](http://www.georgelee.me/project/uploadjs)
 See Upload.js in action
 
 ---
+<a href="#install" name="install"></a>
 ## Install
 
 [Download](https://github.com/georgelee1/Upload.js/releases) The latest release of Upload.js and add it to your project
@@ -36,12 +54,14 @@ bower install uploadjs
 ```
 
 ---
+<a href="#dependencies" name="dependencies"></a>
 ### Dependencies
 **None, zero, zilch, zip, nadda**
 
 This project is designed to be standalone. We don't force your project to have to include any other third party libraries.
 
 ---
+<a href="#browser-support" name="browser-support"></a>
 ### Browser Support
 Any browser that supports HTML5, XMLHttpRequest advanced features and File/FileReader API.
 
@@ -51,6 +71,7 @@ Any browser that supports HTML5, XMLHttpRequest advanced features and File/FileR
 * Safari (6.0.2+)
 
 ---
+<a href="#usage" name="usage"></a>
 ## Usage
 Pretty simple really add a `div` to your page, find it in your script and call the `UploadJs` plugin.
 
@@ -65,6 +86,7 @@ new UploadJs(myDiv)
 ```
 
 ---
+<a href="#initial-images" name="initial-images"></a>
 ## Initial Images
 It is possible to show initial images in the widget that may previously exist. Simply include them as `img` tags within the `div`. If you are enabling [deletable](#option-deletable) each `img` tag must include the HTML data attribute `data-upload-image-id=<id>` where `<id>` is a unique identifier for the file that will be set as the [deletion parameter](#option-deletion-parameter) to the [deletion URL](#option-deletion-url).
 ```html
@@ -75,6 +97,7 @@ It is possible to show initial images in the widget that may previously exist. S
 ```
 
 ---
+<a href="#options" name="options"></a>
 ## Options
 `UploadJs` is configurable in it's behaviour. All options are configurable via the javascript options, and many others as HTML data attributes. You can use a combination of the two where applicable.
 
@@ -96,6 +119,7 @@ new UploadJs(myDiv, options)
 <div id="my-uploadjs" data-upload-url="/upload" data-upload-delete-url="/delete" />
 ```
 
+<a href="#options-available" name="options-available"></a>
 #### Available Options
 
 |Name|Option|Description|
@@ -108,6 +132,7 @@ new UploadJs(myDiv, options)
 |<a href="#option-deletable" name="option-deletable"></a>Deletable|<div>`deletable: <boolean>`</div>**or**<div>`data-upload-deletable="<boolean>"`</div>|*Default*:`true`<br/><br/>Indicates whether or not files are deletable. If `true` the delete button will appear for each file, when clicked the [deletion url](#option-deletion-url) is called.|
 |<a href="#option-allowed-types" name="option-allowed-types"></a>Allowed Types|<div>`allowed_types: []`</div>**or**<div>`data-upload-allowed-types="<string>[,<string>[,...]]"`</div>|*Default:*`["images"]`<br/><br/>`<array>` or commor (`,`) separated `<string>` of allowed file MIME content types e.g. `image/png`, `image/jpg`. You can use the predefined type key `images` which includes `["image/jpg", "image/jpeg", "image/png", "image/gif"]` e.g. `allowed_types: ["images"]`.|
 
+<a href="#options-callback" name="options-callback"></a>
 #### Callback
 
 When defining the options via the javascript API, option values can be defined using a `function`. There is an optional `done` callback that can be passed to the options function that should be called, passing the option value, when the option value has been loaded. If the `done` callback is not defined as a function parameter then the option value should be returned.
@@ -135,7 +160,62 @@ var options = {
 }
 ```
 
+<a href="#options-additional-params" name="options-additional-params"></a>
+#### Additional Http Parameters
+
+It is possible to define additional parameters to be included in the upload and delete http calls. These parameters can be defined statically or can be dynamic. Static definition is done using html `data-upload-additional-param-<key>` or `data-upload-delete-additional-param-<key>` attributes or via the javascript options, note that a combination of the two can not be used.
+
+**Html definition**
+```html
+<div id="my-uploadjs" data-upload-additional-param-my-param="myValue" data-upload-additional-param-other-param="anotherValue" data-upload-delete-additional-param-del-param="deleting" />
+```
+
+**Javascript definition**
+```javascript
+var options = {
+    upload: {
+        additionalParams: {
+            myParam: "myValue",
+            otherParam: "anotherValue"
+        }
+    },
+    delete: {
+        additionalParams: {
+            delParam: "deleting"
+        }
+    }
+}
+```
+
+You can take advantage of the [callback](#options-callback) functionality for options to create the additional parameters dynamically. An object of the parameters must be returned from the function or passed to the `done` callback if defined (see [callback](#options-callback) functionality).
+
+```javascript
+var options = {
+    upload: {
+        additionalParams: function() {
+            var my = "my";
+            var value = "Value";
+            
+            return {
+                myParam: my + value,
+                otherParam: "anotherValue"
+            }
+        }
+    },
+    delete: {
+        additionalParams: function(done) {
+            done({
+                delParam: "deleting"
+            });
+        }
+    }
+}
+```
+
+These examples will add `myParam=myValue` and `otherParam=anotherValue` to the upload http request and `delParam=deleting` to the delete http request in addition to the standard `file` parameters.
+
 ---
+<a href="#methods" name="methods"></a>
 ## Methods
 Methods available on `UploadJs` and what they are good for
 
@@ -144,6 +224,7 @@ Methods available on `UploadJs` and what they are good for
 |`on(<string>, <function>)`|Adds a listener to `UploadJs` that will trigger the passed function for the event. Available events are: <br/><br/><ul><li>`upload.added` - A new file upload has been added to the queue for upload</li><li>`upload.started` - The file upload has been taken from the queue and actual upload has stared</li><li>`upload.progress` - Fired with with the progress of the upload</li><li>`upload.done` - The upload has successfully completed with success from the server</li><li>`upload.fail` - The upload of the file failed</li><li>`delete.added` - An existing file has been added to the queue for deletion</li><li>`delete.started` - The file deletion has been taken from the queue and the request to server is being made</li><li>`delete.done` - The file was successfully deleted</li><li>`delete.failed` - The file deletion failed</li></ul>|The event object is passed to the handler function. It contains the following field:<br/><br/><ul><li>`file` - field present for `upload.*` events, a reference to the file object.</li><li>`id` - field present for `delete.*` events, the file id</li><li>`progress` - `int` field `0-100` present for `upload.progress` event</li></ul>|`var uploadJs = new UploadJs(...);`<br/>`uploadJs.on("upload.success", function(e) { ... });`|
 
 ---
+<a href="#styling" name="styling"></a>
 ## Styling
 By default the icons used in `UploadJs` are unicode symbol characters
 
@@ -161,5 +242,6 @@ These can be changed to make the widget look a little nicer by using icons from 
 ```
 
 ---
+<a href="#contributing" name="contributing"></a>
 ## Issues and Contributing
 If you have found a bug or would like a new feature added to `UploadJs` or you would just like to contribute then please read the [Contributing](CONTRIBUTING.md) read me before anything else.

@@ -18,8 +18,8 @@ export class DeleteItem extends Item {
     run(done) {
         this._trigger({type: "delete.started", id: this._id})
         let item = this
-        this._widget._opts.get("delete.url", "delete.parm", (url, param) => {
-            item._widget._opts.get("http")(url, {[param]: item._id})
+        this._widget._opts.get("delete.url", "delete.param", "delete.additionalParams", (url, param, additionalParams) => {
+            item._widget._opts.get("http")(url, Object.assign(additionalParams || {}, {[param]: item._id}))
                 .done(item._done.bind(item, done))
                 .fail(item._fail.bind(item, done))
         })

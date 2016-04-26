@@ -73,7 +73,7 @@ export function run() {
             should(request.method).be.exactly("POST")
             should(request.url).be.exactly("/test")
             should(request.async).be.True()
-            should(request.headers["Content-Type"]).be.exactly("application/x-www-form-urlencoded")
+            should(request.headers["Content-Type"]).be.Undefined();
         })
 
         it("parameters are set correctly for file map", function() {
@@ -97,7 +97,7 @@ export function run() {
             should(request.method).be.exactly("POST")
             should(request.url).be.exactly("/test")
             should(request.async).be.True()
-            should(request.headers["Content-Type"]).be.exactly("multipart/form-data")
+            should(request.headers["Content-Type"]).be.Undefined();
         })
 
         it("should trigger done handler on success", function() {

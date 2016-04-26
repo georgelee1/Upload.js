@@ -1,7 +1,7 @@
 # Contributing
 ---
 ## Get involved
-Making `UploadJs` the best file upload widget in the world is only achievable with your help. Whether that is by [raising a fault](#raising-a-fault), [requesting an enhancement](request-enhancement), full out [contributing](#contributing) yourself, or just spreading the word, everybody's involvement is hugely appreciated and welcomed.
+Making `UploadJs` the best file upload widget in the world is only achievable with your help. Whether that is by [raising a fault](#raising-a-fault), [requesting an enhancement](#request-enhancement), full out [contributing](#contributing) yourself, or just spreading the word, everybody's involvement is hugely appreciated and welcomed.
 
 Having said that, we expect you to follow the standard [code of conduct](http://contributor-covenant.org/version/1/3/0/code_of_conduct.txt) when getting involved.
 
