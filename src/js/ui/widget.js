@@ -94,11 +94,11 @@ export class Widget {
       img.remove();
     });
 
-    this._add = this._parser.parse(this._opts.get('template.add')).appendTo(this._ele)
+    this._add = this._parser.parse(this._opts.get('template.add')).appendTo(this._ele);
 
     this._picker = this._picker.items[0];
-    this._ele.on('click', m(true).css('item', 'new'), this._picker.click.bind(this._picker))
-    this._ele.on('click', m(true).css('del'), this._delete.bind(this))
+    this._ele.on('click', m(true).css('item', 'new'), this._picker.click.bind(this._picker));
+    this._ele.on('click', m(true).css('del'), this._delete.bind(this));
 
     const reduceAndUpdate = () => {
       this._size--;
