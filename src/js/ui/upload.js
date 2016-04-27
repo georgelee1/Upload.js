@@ -23,10 +23,11 @@ export class UploadItem extends Item {
     this._dom_progress = this._ele.find('.progress');
 
     const item = this;
-    this._widget._opts.get('upload.url', 'upload.param', 'upload.additionalParams',
-      (url, param, additionalParams) => {
+    this._widget._opts.get(
+      'upload.url', 'upload.param', 'upload.additionalParams', 'upload.headers',
+      (url, param, additionalParams, headers) => {
         const params = Object.assign(additionalParams || {}, { [param]: item._file });
-        item._widget._opts.get('http')(url, params)
+        item._widget._opts.get('http')(url, params, headers)
           .progress(item._progress.bind(item))
           .done(item._done.bind(item, done))
           .fail(item._fail.bind(item, done));

@@ -2,6 +2,16 @@ import { Widget } from './ui/widget';
 import { Http } from './util/http';
 
 /**
+ * Wraps the passed function in closure that calls the function with the 'this' value
+ * passed as the first argument.
+ */
+function contextFunctionWrapperFactory(funct) {
+  return function contextFunctionWrapper(... args) {
+    return funct.apply(this, [this, ... args]);
+  };
+}
+
+/**
  * Default options for the UploadJs widget
  */
 const DEFAULTS = {
@@ -15,46 +25,66 @@ const DEFAULTS = {
     done: 'div.icon.done (i)',
     error: 'div.icon.error (i)',
   },
-  max: () => parseInt(this.dataset.uploadMax, 10) || 0,
-  deletable: () => this.dataset.uploadDeletable !== 'false',
+  max: contextFunctionWrapperFactory((ele) => parseInt(ele.dataset.uploadMax, 10) || 0),
+  deletable: contextFunctionWrapperFactory((ele) => ele.dataset.uploadDeletable !== 'false'),
   types: {
     images: ['image/jpg', 'image/jpeg', 'image/png', 'image/gif'],
   },
-  allowed_types: () => {
-    if (typeof this.dataset.uploadAllowedTypes === 'undefined') {
+  allowed_types: contextFunctionWrapperFactory((ele) => {
+    if (typeof ele.dataset.uploadAllowedTypes === 'undefined') {
       return ['images'];
     }
-    return this.dataset.uploadAllowedTypes.split(',');
-  },
+    return ele.dataset.uploadAllowedTypes.split(',');
+  }),
   upload: {
-    url: () => this.dataset.uploadUrl,
-    param: () => this.dataset.uploadParam || 'file',
-    additionalParams: () => {
+    url: contextFunctionWrapperFactory((ele) => ele.dataset.uploadUrl),
+    param: contextFunctionWrapperFactory((ele) => ele.dataset.uploadParam || 'file'),
+    additionalParams: contextFunctionWrapperFactory((ele) => {
       const additional = {};
-      Object.keys(this.dataset).forEach((key) => {
-        const prefix = 'uploadAdditionalParam';
+      const prefix = 'uploadAdditionalParam';
+      Object.keys(ele.dataset).forEach((key) => {
         if (key.startsWith(prefix)) {
-          additional[key.substr(prefix.length)] = this.dataset[key];
+          additional[key.substr(prefix.length)] = ele.dataset[key];
         }
       });
       return additional;
-    },
+    }),
+    headers: contextFunctionWrapperFactory((ele) => {
+      const headers = {};
+      const prefix = 'uploadHeader';
+      Object.keys(ele.dataset).forEach((key) => {
+        if (key.startsWith(prefix)) {
+          headers[key.substr(prefix.length)] = ele.dataset[key];
+        }
+      });
+      return headers;
+    }),
   },
   delete: {
-    url: () => this.dataset.uploadDeleteUrl,
-    param: () => this.dataset.uploadDeleteParam || 'file',
-    additionalParams: () => {
+    url: contextFunctionWrapperFactory((ele) => ele.dataset.uploadDeleteUrl),
+    param: contextFunctionWrapperFactory((ele) => ele.dataset.uploadDeleteParam || 'file'),
+    additionalParams: contextFunctionWrapperFactory((ele) => {
       const additional = {};
-      Object.keys(this.dataset).forEach((key) => {
-        const prefix = 'uploadDeleteAdditionalParam';
+      const prefix = 'uploadDeleteAdditionalParam';
+      Object.keys(ele.dataset).forEach((key) => {
         if (key.startsWith(prefix)) {
-          additional[key.substr(prefix.length)] = this.dataset[key];
+          additional[key.substr(prefix.length)] = ele.dataset[key];
         }
       });
       return additional;
-    },
+    }),
+    headers: contextFunctionWrapperFactory((ele) => {
+      const headers = {};
+      const prefix = 'uploadDeleteHeader';
+      Object.keys(ele.dataset).forEach((key) => {
+        if (key.startsWith(prefix)) {
+          headers[key.substr(prefix.length)] = ele.dataset[key];
+        }
+      });
+      return headers;
+    }),
   },
-  http: () => (url, params) => new Http(url, params),
+  http: () => (url, params, headers) => new Http(url, params, headers),
 };
 
 /**

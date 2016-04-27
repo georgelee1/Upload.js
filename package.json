@@ -44,6 +44,7 @@
     "dist": "gulp -- dist",
     "test": "gulp -- test",
     "gulp": "gulp",
-    "lint": "eslint src/js/*.js"
+    "lint": "eslint src/js/**/*.js",
+    "demo": "open http://localhost:8000/demo/uploadjs.demo.html && node demo/upload.server.js"
   }
 }

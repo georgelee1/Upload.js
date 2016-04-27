@@ -12,7 +12,7 @@ A simple and clean HTML5, dependency free, image uploader and remover
 * [Options](#options)
     * [Available Options](#options-available)
     * [Callback](#options-callback)
-    * [Additional Http Parameters](#options-additional-params) 
+    * [Http Additional Parameters and Headers](#options-additional-params) 
 * [Methods](#methods)
 * [Styling](#styling)
 * [Contributing](#contributing)
@@ -161,13 +161,13 @@ var options = {
 ```
 
 <a href="#options-additional-params" name="options-additional-params"></a>
-#### Additional Http Parameters
+#### Http Additional Parameters and Headers
 
-It is possible to define additional parameters to be included in the upload and delete http calls. These parameters can be defined statically or can be dynamic. Static definition is done using html `data-upload-additional-param-<key>` or `data-upload-delete-additional-param-<key>` attributes or via the javascript options, note that a combination of the two can not be used.
+It is possible to define additional parameters and headers to be included in the upload and delete http calls. These parameters/headers can be defined statically or can be dynamic. Static definition is done using html `data-upload-additional-param-<key>` or `data-upload-delete-additional-param-<key>` or `data-upload-header-<key>` or `data-upload-delete-header-<key>` attributes or via the javascript options, note that a combination of the two can not be used.
 
 **Html definition**
 ```html
-<div id="my-uploadjs" data-upload-additional-param-my-param="myValue" data-upload-additional-param-other-param="anotherValue" data-upload-delete-additional-param-del-param="deleting" />
+<div id="my-uploadjs" data-upload-additional-param-my-param="myValue" data-upload-additional-param-other-param="anotherValue" data-upload-delete-additional-param-del-param="deleting" data-upload-header-testheader="headerValue" data-upload-delete-header-delheader="delHeaderValue" />
 ```
 
 **Javascript definition**
@@ -177,11 +177,17 @@ var options = {
         additionalParams: {
             myParam: "myValue",
             otherParam: "anotherValue"
+        },
+        headers: {
+            testheader: "headerValue"
         }
     },
     delete: {
         additionalParams: {
             delParam: "deleting"
+        },
+        headers: {
+            delheader: "delHeaderValue"
         }
     }
 }
@@ -213,6 +219,22 @@ var options = {
 ```
 
 These examples will add `myParam=myValue` and `otherParam=anotherValue` to the upload http request and `delParam=deleting` to the delete http request in addition to the standard `file` parameters.
+In additional the http header of `testheader: headerValue` will be added to the upload and `delheader: delHeaderValue` to the delete http request.
+
+**HTML Data Attributes and Case**
+
+When using HTML `data-*` attributes be aware of how browsers will parse the attribute value, see [HTMLElement.dataset](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dataset) for full details. If you define an attribute `data-upload-header-X-MYHEADER="test"` the header will come out as `XMyheader: test`.
+
+If case is important in your parameters or headers then you should define them using the JS options.
+```html
+var options = {
+    upload: {
+        headers: {
+            "X-MYHEADER": "test"
+        }
+    }
+}
+```
 
 ---
 <a href="#methods" name="methods"></a>

@@ -35,9 +35,10 @@ export class Http {
    * @param url URL to post to
    * @param params Object of parameters in the form of key:values
    */
-  constructor(url, params = {}) {
+  constructor(url, params = {}, headers = {}) {
     this._url = url;
     this._params = params;
+    this._headers = headers;
     this._progress = NOOP;
     this._done = NOOP;
     this._fail = NOOP;
@@ -124,6 +125,11 @@ export class Http {
     }, false);
 
     request.open('POST', this._url, true);
+    if (this._headers) {
+      Object.keys(this._headers).forEach((key) => {
+        request.setRequestHeader(key, this._headers[key]);
+      });
+    }
     request.send(data);
   }
 }
