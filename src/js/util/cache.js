@@ -1,6 +1,6 @@
 /**
- * A simple cache. When attempting to add to a full cache entries are evicted to make space (LRU). The auto eviction only occurs when a
- * max size has been defined for the map.
+ * A simple cache. When attempting to add to a full cache entries are evicted to make space (LRU).
+ * The auto eviction only occurs when a max size has been defined for the map.
  *
  * Usage:
  * let cache = new Cache(max=5)
@@ -22,82 +22,86 @@
  * @class
  */
 export class Cache {
-    constructor(max = 0) {
-        this._max = max
-        this._map = {}
-        this._head = {}
-        this._tail = {prev: this._head}
-        this._head.next = this._tail
-        this.length = 0
-    }
+  constructor(max = 0) {
+    this._max = max;
+    this._map = {};
+    this._head = {};
+    this._tail = { prev: this._head };
+    this._head.next = this._tail;
+    this.length = 0;
+  }
 
-    /**
-     * Get value mapped to the passed key in the cache.
-     */
-    get(key) {
-        let entry = this._map[key]
-        this._insertAtTail(entry)
-        return entry ? entry.val : undefined
-    }
+  /**
+   * Get value mapped to the passed key in the cache.
+   */
+  get(key) {
+    const entry = this._map[key];
+    this._insertAtTail(entry);
+    return entry ? entry.val : undefined;
+  }
 
-    /**
-     * Put the passed value mapped against the passed key in the cache. If a mapping with the same key already exists it will be overridden.
-     * True is returned if this is a new mapping being added, otherwise false if being overridden.
-     */
-    put(key, val) {
-        if (this._max > 0 && this.length > 0 && this.length == this._max) {
-            this.remove(this._head.next.key)
-        }
-        let entry = this._map[key], newEntry = true
-        if (entry) {
-            entry.val = val
-            newEntry = false
-        } else {
-            entry = {key, val}
-            this._map[key] = entry
-            this.length++
-        }
-        this._insertAtTail(entry)
-        return newEntry
+  /**
+   * Put the passed value mapped against the passed key in the cache. If a mapping with the same
+   * key already exists it will be overridden. True is returned if this is a new mapping being
+   * added, otherwise false if being overridden.
+   */
+  put(key, val) {
+    if (this._max > 0 && this.length > 0 && this.length === this._max) {
+      this.remove(this._head.next.key);
     }
+    let entry = this._map[key];
+    let newEntry = true;
+    if (entry) {
+      entry.val = val;
+      newEntry = false;
+    } else {
+      entry = { key, val };
+      this._map[key] = entry;
+      this.length++;
+    }
+    this._insertAtTail(entry);
+    return newEntry;
+  }
 
-    /**
-     * Remove the entry from the cache against the mapped key. Returns the current value mapped.
-     */
-    remove(key) {
-        let entry = this._map[key]
-        if (entry) {
-            delete this._map[key]
-            this._evict(entry)
-            this.length--
-            return entry.val
-        }
+  /**
+   * Remove the entry from the cache against the mapped key. Returns the current value mapped.
+   */
+  remove(key) {
+    const entry = this._map[key];
+    if (entry) {
+      delete this._map[key];
+      this._evict(entry);
+      this.length--;
+      return entry.val;
     }
+    return undefined;
+  }
 
-    /**
-     * @private
-     */
-    _evict(entry) {
-        if (entry) {
-            let prev = entry.prev
-            let next = entry.next
-            prev.next = next
-            next.prev = prev
-        }
+  /**
+   * @private
+   */
+  _evict(entry) {
+    if (entry) {
+      const prev = entry.prev;
+      const next = entry.next;
+      prev.next = next;
+      next.prev = prev;
     }
+  }
 
-    /**
-     * @private
-     */
-    _insertAtTail(entry) {
-        if (entry) {
-            if (entry.next) {
-                this._evict(entry)
-            }
-            entry.prev = this._tail.prev
-            entry.prev.next = entry
-            entry.next = this._tail
-            this._tail.prev = entry
-        }
+  /**
+   * @private
+   */
+  _insertAtTail(item) {
+    const entry = item;
+    if (entry) {
+      if (entry.next) {
+        this._evict(entry);
+      }
+      entry.prev = this._tail.prev;
+      entry.prev.next = entry;
+      entry.next = this._tail;
+      this._tail.prev = entry;
     }
+  }
 }

@@ -40,10 +40,10 @@ Before you begin there must exist an `accepted` [issue](https://github.com/georg
 Follow these steps from start to PR:
 
 * Fork `UploadJs`
-* Create a branch (`git checkout -b <branch_name> origin/master`). Name your branch with prefix `UP-` so for issue number `1`  name the branch `UP-1`
+* Create a branch (`git checkout -b <branch_name> origin/master`).
 * The fun part... code, code, code
 * The important part... test. Make sure that existing tests pass (`npm run test`). **Your work must also include appropriate test coverage for your new code**.
-* Commit your changes (`git commit -a`)
+* Commit your changes (`git commit -a`). Ensure your commit message references the issue you are working on (`git commit -a -m "#<issue> My commit message"`)
 * Push (`git push origin <branch_name>`)
 * In GitHub create a Pull Request to `uploadjs:master`
 

@@ -47,70 +47,66 @@
  */
 export class Options {
 
-    constructor(opts, context) {
-        this._opts = Array.isArray(opts) ? opts : [opts]
-        this._context = context || this
-    }
+  constructor(opts, context) {
+    this._opts = Array.isArray(opts) ? opts : [opts];
+    this._context = context || this;
+  }
 
-    get(...args) {
-        let names = []
-        let callback = undefined
-        args.forEach(a => {
-            if (typeof a === "string") {
-                names.push(a)
-            } else if (typeof a === "function") {
-                callback = a
-            }
-        })
-        
-        let result = []
-        let next = () => {
-            if (names.length === 0) {
-                if (callback) {
-                    callback.apply(this.context, result)
-                }
-                return
-            }
-            let name = names.shift().split("\.")
-            let val = undefined
-            this._opts.some(opts => {
-                let find = opts
-                name.forEach(p => {
-                    if (typeof find !== "undefined") {
-                        find = find[p]
-                    }
-                })
-                if (typeof find !== "undefined") {
-                    val = find
-                    return true
-                }
-                return false
-            })
-            if (!("function" === typeof val)) {
-                val = (v => {
-                    return () => {
-                        return v
-                    }
-                })(val)
-            }
-            if (val.length > 0) {
-                val.apply(this._context, [(v => { 
-                    result.push(v)
-                    next()
-                })])
-            } else {
-                result.push(val.apply(this._context))
-                next()
-            }
-        }
-        next()
+  get(...args) {
+    const names = [];
+    let callback = undefined;
+    args.forEach(a => {
+      if (typeof a === 'string') {
+        names.push(a);
+      } else if (typeof a === 'function') {
+        callback = a;
+      }
+    });
 
-        if (!callback) {
-            if (result.length > 1) {
-                return result
-            } else {
-                return result[0]
-            }
+    const result = [];
+    const next = () => {
+      if (names.length === 0) {
+        if (callback) {
+          callback.apply(this.context, result);
         }
+        return;
+      }
+      const name = names.shift().split('.');
+      let val = undefined;
+      this._opts.some(opts => {
+        let find = opts;
+        name.forEach(p => {
+          if (typeof find !== 'undefined') {
+            find = find[p];
+          }
+        });
+        if (typeof find !== 'undefined') {
+          val = find;
+          return true;
+        }
+        return false;
+      });
+      if (!(typeof val === 'function')) {
+        val = (v => () => v)(val);
+      }
+      if (val.length > 0) {
+        val.apply(this._context, [(v) => {
+          result.push(v);
+          next();
+        }]);
+      } else {
+        result.push(val.apply(this._context));
+        next();
+      }
+    };
+    next();
+
+    if (!callback) {
+      if (result.length > 1) {
+        return result;
+      }
+      return result[0];
     }
+    return undefined;
+  }
 }
