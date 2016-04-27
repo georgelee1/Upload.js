@@ -167,7 +167,12 @@ It is possible to define additional parameters and headers to be included in the
 
 **Html definition**
 ```html
-<div id="my-uploadjs" data-upload-additional-param-my-param="myValue" data-upload-additional-param-other-param="anotherValue" data-upload-delete-additional-param-del-param="deleting" data-upload-header-testheader="headerValue" data-upload-delete-header-delheader="delHeaderValue" />
+<div id="my-uploadjs" 
+     data-upload-additional-param-my-param="myValue"
+     data-upload-additional-param-other-param="anotherValue" 
+     data-upload-delete-additional-param-del-param="deleting" 
+     data-upload-header-testheader="headerValue" 
+     data-upload-delete-header-delheader="delHeaderValue" />
 ```
 
 **Javascript definition**
