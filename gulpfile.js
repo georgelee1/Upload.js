@@ -22,41 +22,41 @@ const fileHeader = '/** Upload.js (${version}) | ${homepage} | ${license} */';
 
 gulp.task('script', () =>
   browserify({ entries: './src/js/upload.js', extensions: ['.js'], debug: true })
-    .transform(babelify, { presets: ['es2015'] })
-    .bundle()
-    .on('error', errored)
-    .pipe(source('uploadjs.js'))
-    .pipe(buffer())
-    .pipe(uglify())
-    .pipe(header(fileHeader, p))
-    .pipe(gulp.dest('dist'))
+  .transform(babelify, { presets: ['es2015'] })
+  .bundle()
+  .on('error', errored)
+  .pipe(source('uploadjs.js'))
+  .pipe(buffer())
+  .pipe(uglify())
+  .pipe(header(fileHeader, p))
+  .pipe(gulp.dest('dist'))
 );
 
 gulp.task('style', () =>
   gulp.src('src/css/*.scss')
-    .pipe(sass({
-      outputStyle: 'compressed',
-    }).on('error', errored))
-    .pipe(autoprefixer())
-    .pipe(rename('uploadjs.css'))
-    .pipe(header(fileHeader, p))
-    .pipe(gulp.dest('dist'))
+  .pipe(sass({
+    outputStyle: 'compressed',
+  }).on('error', errored))
+  .pipe(autoprefixer())
+  .pipe(rename('uploadjs.css'))
+  .pipe(header(fileHeader, p))
+  .pipe(gulp.dest('dist'))
 );
 
-gulp.task('dist', ['script', 'style'], () => { });
+gulp.task('dist', ['script', 'style'], () => {});
 
 gulp.task('build-test', () =>
   gulp.src('test/tests.js')
-    .pipe(transpile({
-      formatter: 'bundle',
-    }))
-    .pipe(babel({
-      presets: ['es2015'],
-    }))
-    .pipe(gulp.dest('build'))
+  .pipe(transpile({
+    formatter: 'bundle',
+  }))
+  .pipe(babel({
+    presets: ['es2015'],
+  }))
+  .pipe(gulp.dest('build'))
 );
 
 gulp.task('test', ['build-test'], () =>
   gulp.src('./build/test/tests.js', { read: false })
-    .pipe(mocha({ reporter: 'progress' }))
+  .pipe(mocha({ reporter: 'progress' }))
 );
