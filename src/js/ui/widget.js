@@ -84,6 +84,7 @@ export class Widget {
         const item = this._parser.parse(this._opts.get('template.item'));
         item.find('img').attr('src', img.attr('src'));
         if (this._deletable && typeof img.data('uploadImageId') !== 'undefined') {
+          item.data('uploadImageId', img.data('uploadImageId'));
           this._parser.parse(this._opts.get('template.actions')).appendTo(item);
         } else {
           item.addClass('static');
