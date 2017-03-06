@@ -11,7 +11,7 @@
  *     size: 100
  * }
  *
- * let q = new Queue((item, done) => {
+ * let q = queue((item, done) => {
  *     // do some work with item that takes 1s, simulated here with setTimeout
  *     setTimeout(() => {
  *         done()
