@@ -19,7 +19,7 @@
  * cache.put("test5", "val5") === true // evicts oldest
  * cache.get("test") === undefined
  */
-export function cache(max) {
+export default function cache(max) {
   const _map = {};
   const _head = {};
   const _tail = { prev: _head };

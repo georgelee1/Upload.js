@@ -27,7 +27,7 @@ const NOOP = () => {};
  *     // do something when failed
  * })
  */
-export function http(url, params = {}, headers = {}) {
+export default function http(url, params = {}, headers = {}) {
   let _progress = NOOP;
   let _done = NOOP;
   let _fail = NOOP;

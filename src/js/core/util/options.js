@@ -41,7 +41,7 @@
  *     v2 === "val3"
  * })
  */
-export function options(opts) {
+export default function options(opts) {
   /**
    * @private
    */
@@ -73,7 +73,15 @@ export function options(opts) {
 
     let values = _mapKeysToValues(keys);
     if (!callback) {
-      values = values.map(v => (typeof v === 'function' ? undefined : v));
+      values = values.map((v) => {
+        if (typeof v === 'function') {
+          if (v.length === 0) {
+            return v();
+          }
+          return undefined;
+        }
+        return v;
+      });
       if (values.length > 1) {
         return values;
       }
@@ -81,23 +89,28 @@ export function options(opts) {
     }
 
     let toResolve = values.filter(v => typeof v === 'function').length;
-    const valueCallback = idx => (val) => {
-      values[idx] = val;
-      toResolve--;
-      if (toResolve === 0) {
-        callback(...values);
-      }
-    };
 
-    values.forEach((v, idx) => {
-      if (typeof v === 'function') {
-        if (v.length > 0) {
-          v(valueCallback(idx));
-        } else {
-          valueCallback(idx)(v());
+    if (toResolve === 0) {
+      callback(...values);
+    } else {
+      const valueCallback = idx => (val) => {
+        values[idx] = val;
+        toResolve--;
+        if (toResolve === 0) {
+          callback(...values);
         }
-      }
-    });
+      };
+
+      values.forEach((v, idx) => {
+        if (typeof v === 'function') {
+          if (v.length > 0) {
+            v(valueCallback(idx));
+          } else {
+            valueCallback(idx)(v());
+          }
+        }
+      });
+    }
 
     return undefined;
   }

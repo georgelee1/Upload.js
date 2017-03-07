@@ -7,3 +7,4 @@ node_modules
 /npm-debug.log
 .README.md.html
 .DS_Store
+yarn-error.log

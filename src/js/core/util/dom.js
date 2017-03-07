@@ -1,4 +1,4 @@
-import { Cache } from './cache';
+import cache from './cache';
 
 /**
  * Flattens the passed object into an Array of elements. Detect if the type is a single element,
@@ -245,18 +245,18 @@ export class DOMList {
   }
 
   /**
-  * Get or set the passed attribute on all the DOM elements within this DOMList.
-  *
-  * Usage:
-  * let list = new DOMList([dom1, dom2])
-  * list.attr("test", "val") // set
-  * list.attr("test") === "val" // get
-  * list.attr({
-  *  test: "val", // set
-  *  test2: undefined // remove
-  * );
-  * list.attr("test", undefined) // remove
-  */
+   * Get or set the passed attribute on all the DOM elements within this DOMList.
+   *
+   * Usage:
+   * let list = new DOMList([dom1, dom2])
+   * list.attr("test", "val") // set
+   * list.attr("test") === "val" // get
+   * list.attr({
+   *  test: "val", // set
+   *  test2: undefined // remove
+   * );
+   * list.attr("test", undefined) // remove
+   */
   attr(key, val) {
     if (typeof key === 'object') {
       this.items.forEach(ele => {
@@ -418,7 +418,7 @@ export class DOMList {
  */
 export class SimpleDOMParser {
   constructor(size = 10) {
-    this._cache = new Cache(size);
+    this._cache = cache(size);
   }
 
   /**

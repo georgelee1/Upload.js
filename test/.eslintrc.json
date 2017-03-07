@@ -1,0 +1,17 @@
+{
+  "extends": "airbnb",
+  "rules": {
+    "no-underscore-dangle": ["off"],
+    "new-cap": ["off"],
+    "no-unused-expressions": ["off"],
+    "no-param-reassign": ["off"],
+    "space-before-function-paren": ["off"],
+    "func-names": ["off"]
+  },
+  "globals": {
+    "describe": true,
+    "it": true,
+    "beforeEach": true,
+    "before": true
+  }
+}

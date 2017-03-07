@@ -5,9 +5,7 @@ const babelify = require('babelify');
 const source = require('vinyl-source-stream');
 const buffer = require('vinyl-buffer');
 const uglify = require('gulp-uglify');
-const transpile = require('gulp-es6-module-transpiler');
 const mocha = require('gulp-mocha');
-const babel = require('gulp-babel');
 const header = require('gulp-header');
 const sass = require('gulp-sass');
 const autoprefixer = require('gulp-autoprefixer');
@@ -45,18 +43,10 @@ gulp.task('style', () =>
 
 gulp.task('dist', ['script', 'style'], () => {});
 
-gulp.task('build-test', () =>
-  gulp.src('test/tests.js')
-  .pipe(transpile({
-    formatter: 'bundle',
+gulp.task('test', () =>
+  gulp.src('./test/**/*.test.js', { read: false })
+  .pipe(mocha({
+    require: ['babel-register'],
+    reporter: 'progress',
   }))
-  .pipe(babel({
-    presets: ['es2015'],
-  }))
-  .pipe(gulp.dest('build'))
-);
-
-gulp.task('test', ['build-test'], () =>
-  gulp.src('./build/test/tests.js', { read: false })
-  .pipe(mocha({ reporter: 'progress' }))
 );
