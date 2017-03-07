@@ -1,4 +1,4 @@
-import update from '../../src/js/core/util/update';
+import update from '../../../src/js/core/util/update';
 import should from 'should'; // eslint-disable-line no-unused-vars
 
 describe('Update', () => {

@@ -1,4 +1,4 @@
-import options from '../../src/js/core/util/options';
+import options from '../../../src/js/core/util/options';
 import should from 'should';
 
 describe('Options', () => {

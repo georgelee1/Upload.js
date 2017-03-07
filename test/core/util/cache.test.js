@@ -1,4 +1,4 @@
-import cache from '../../src/js/core/util/cache';
+import cache from '../../../src/js/core/util/cache';
 import should from 'should';
 
 describe('Cache', () => {

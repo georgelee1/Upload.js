@@ -1,4 +1,4 @@
-import http from '../../src/js/core/util/http';
+import http from '../../../src/js/core/util/http';
 import should from 'should';
 
 export function run() {

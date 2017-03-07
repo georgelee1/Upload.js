@@ -1,4 +1,4 @@
-import { SimpleDOMParser, DOMList, Matcher } from '../../src/js/core/util/dom';
+import { SimpleDOMParser, DOMList, Matcher } from '../../../src/js/core/util/dom';
 import should from 'should';
 
 global.document = {

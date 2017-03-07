@@ -2,7 +2,7 @@
  * Types module. Gets and parses pre-defined types and allowed types, the exposes
  * an isAllowed function to test whether a type is allowed or not.
  */
-export function types(opts) {
+export default function types(opts) {
   let allowed;
   let waiting = [];
 

@@ -1,4 +1,4 @@
-import queue from '../../src/js/core/util/queue';
+import queue from '../../../src/js/core/util/queue';
 import should from 'should'; // eslint-disable-line no-unused-vars
 
 describe('Queue', () => {
