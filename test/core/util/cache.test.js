@@ -1,7 +1,7 @@
 import cache from '../../../src/js/core/util/cache';
 import should from 'should';
 
-describe('Cache', () => {
+describe('cache', () => {
   describe('#put', () => {
     it('should add and get entry to/from the cache', () => {
       const c = cache();

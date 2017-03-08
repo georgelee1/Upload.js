@@ -16,7 +16,7 @@ global.document = {
   },
 };
 
-describe('Dom', () => {
+describe('dom', () => {
   describe('Matcher', () => {
     describe('#test', () => {
       it('should return true if the type matcher passed', () => {

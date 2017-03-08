@@ -1,5 +1,5 @@
 /**
- * Types module. Gets and parses pre-defined types and allowed types, the exposes
+ * Types module. Gets and parses pre-defined types and allowed types, exposes
  * an isAllowed function to test whether a type is allowed or not.
  */
 export default function types(opts) {

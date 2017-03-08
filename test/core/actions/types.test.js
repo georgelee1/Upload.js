@@ -1,8 +1,8 @@
-import types from '../../src/js/core/types';
-import options from '../../src/js/core/util/options';
+import types from '../../../src/js/core/actions/types';
+import options from '../../../src/js/core/util/options';
 import should from 'should';
 
-describe.only('types', () => {
+describe('types', () => {
   describe('Sync defined options', () => {
     let t;
 
