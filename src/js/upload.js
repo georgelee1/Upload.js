@@ -1,91 +1,42 @@
-import { Widget } from './ui/widget';
-import { Http } from './util/http';
+import parse from './render/parse';
+import core from './core';
+import http from './core/util/http';
+import events from './core/util/events';
+import options from './core/util/options';
 
-/**
- * Wraps the passed function in closure that calls the function with the 'this' value
- * passed as the first argument.
- */
-function contextFunctionWrapperFactory(funct) {
-  return function contextFunctionWrapper(... args) {
-    return funct.apply(this, [this, ... args]);
-  };
-}
-
-/**
- * Default options for the UploadJs widget
- */
 const DEFAULTS = {
-  // template Strings
-  template: {
-    item: 'div.item (img)',
-    add: 'div.item.new (div.icon.plus)',
-    actions: 'div.actions (div.action.del (div.trash))',
-    deleting: 'div.spinner div.icon.trash',
-    uploading: 'div.spinner div.icon.upload div.progress',
-    done: 'div.icon.done (i)',
-    error: 'div.icon.error (i)',
-  },
-  max: contextFunctionWrapperFactory((ele) => parseInt(ele.dataset.uploadMax, 10) || 0),
-  deletable: contextFunctionWrapperFactory((ele) => ele.dataset.uploadDeletable !== 'false'),
   types: {
     images: ['image/jpg', 'image/jpeg', 'image/png', 'image/gif'],
   },
-  allowed_types: contextFunctionWrapperFactory((ele) => {
-    if (typeof ele.dataset.uploadAllowedTypes === 'undefined') {
-      return ['images'];
-    }
-    return ele.dataset.uploadAllowedTypes.split(',');
-  }),
-  upload: {
-    url: contextFunctionWrapperFactory((ele) => ele.dataset.uploadUrl),
-    param: contextFunctionWrapperFactory((ele) => ele.dataset.uploadParam || 'file'),
-    additionalParams: contextFunctionWrapperFactory((ele) => {
-      const additional = {};
-      const prefix = 'uploadAdditionalParam';
-      Object.keys(ele.dataset).forEach((key) => {
-        if (key.startsWith(prefix)) {
-          additional[key.substr(prefix.length)] = ele.dataset[key];
-        }
-      });
-      return additional;
-    }),
-    headers: contextFunctionWrapperFactory((ele) => {
-      const headers = {};
-      const prefix = 'uploadHeader';
-      Object.keys(ele.dataset).forEach((key) => {
-        if (key.startsWith(prefix)) {
-          headers[key.substr(prefix.length)] = ele.dataset[key];
-        }
-      });
-      return headers;
-    }),
-  },
-  delete: {
-    url: contextFunctionWrapperFactory((ele) => ele.dataset.uploadDeleteUrl),
-    param: contextFunctionWrapperFactory((ele) => ele.dataset.uploadDeleteParam || 'file'),
-    additionalParams: contextFunctionWrapperFactory((ele) => {
-      const additional = {};
-      const prefix = 'uploadDeleteAdditionalParam';
-      Object.keys(ele.dataset).forEach((key) => {
-        if (key.startsWith(prefix)) {
-          additional[key.substr(prefix.length)] = ele.dataset[key];
-        }
-      });
-      return additional;
-    }),
-    headers: contextFunctionWrapperFactory((ele) => {
-      const headers = {};
-      const prefix = 'uploadDeleteHeader';
-      Object.keys(ele.dataset).forEach((key) => {
-        if (key.startsWith(prefix)) {
-          headers[key.substr(prefix.length)] = ele.dataset[key];
-        }
-      });
-      return headers;
-    }),
-  },
-  http: () => (url, params, headers) => new Http(url, params, headers),
+  allowed_types: ['images'],
 };
+
+function isObject(item) {
+  return (item && typeof item === 'object' && !Array.isArray(item));
+}
+
+function merge(target, ...objs) {
+  if (!objs.length) return target;
+  const next = objs.shift();
+
+  if (isObject(target) && isObject(next)) {
+    Object.keys(next)
+      .forEach((key) => {
+        if (isObject(next[key])) {
+          if (!target[key]) {
+            target[key] = {};
+          }
+          merge(target[key], next[key]);
+        } else {
+          Object.assign(target, {
+            [key]: next[key],
+          });
+        }
+      });
+  }
+
+  return merge(target, ...objs);
+}
 
 /**
  * Allows plain vanilla JavaScript access to the UploadJs Widget.
@@ -98,25 +49,17 @@ const DEFAULTS = {
  * @constructor
  */
 window.UploadJs = class UploadJs {
-
-  /**
-   * @param ele The DOM element
-   * @param {object} opts - Optional. The widget settings.
-   */
   constructor(ele, opts = {}) {
-    this._widget = new Widget(ele, opts, DEFAULTS);
-  }
+    const _container = parse(ele);
 
-  /**
-   * Register an event listener with UploadJs
-   *
-   * @param event Event name, can be `upload.added`, `upload.`started`, `upload.progress`,
-   * `upload.done`, `upload.failed`, `delete.added`, `delete.started`, `delete.done`, `delete.fail`
-   */
-  on(event, handler) {
-    event.split(' ').forEach(e => {
-      this._widget._addListener(e, handler);
+    const _events = events();
+    const _opts = options(merge({}, DEFAULTS, opts));
+    const _core = core(http, _events, _opts);
+
+    _container.onPicked((files) => _core.upload(...files));
+
+    _events.on('upload.started', ({ file }) => {
+      _container.add(file);
     });
-    return this;
   }
 };
