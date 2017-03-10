@@ -1,4 +1,4 @@
-import { addClass, append, make, on } from '../util/dom';
+import { addClass, append, make, on, data } from '../util/dom';
 import item, { TYPE_IMAGE } from '../item';
 
 function makeAdd() {
@@ -8,17 +8,15 @@ function makeAdd() {
   return ele;
 }
 
-function makePicker(trigger, handler) {
+function makePicker(trigger, events) {
   const ele = make('input', {
     type: 'file',
     multiple: 'multiple',
   });
   on(ele, 'change', () => {
-    const list = [];
     for (let x = 0; x < ele.files.length; x++) {
-      list.push(ele.files.item(x));
+      events.trigger('file.picked', { file: ele.files.item(x) });
     }
-    handler(list);
   });
   on(trigger, 'click', ele.click.bind(ele));
   return ele;
@@ -27,15 +25,12 @@ function makePicker(trigger, handler) {
 /**
  * The container module is a wrapper around the upload container.
  */
-export default function container(ele, items) {
+export default function container(ele, items, events) {
   const _items = make('div', { class: 'uploadjs-container' });
   const _actions = make('div', { class: 'uploadjs-container' });
-  append(ele, _items);
-  append(ele, _actions);
+  append(ele, _items, _actions);
 
   const _add = makeAdd();
-  let _onPicked;
-
   addClass(ele, 'uploadjs');
 
   items.forEach((i) => {
@@ -43,28 +38,26 @@ export default function container(ele, items) {
   });
 
   append(_actions, _add);
-  append(ele, makePicker(_add, (files) => {
-    if (_onPicked) {
-      _onPicked(files);
-    }
-  }));
+  append(ele, makePicker(_add, events));
 
-  return {
-    onPicked(listener) {
-      _onPicked = listener;
-    },
-    add(file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const i = item({
-          type: TYPE_IMAGE,
-          src: e.target.result,
-        });
-        i.uploading();
-        items.push(i);
-        i.appendTo(_items);
-      };
-      reader.readAsDataURL(file);
-    },
-  };
+  events.on('upload.started', ({ file }) => {
+    const i = item({
+      type: TYPE_IMAGE,
+      file,
+    });
+    items.push(i);
+    i.appendTo(_items);
+  });
+
+  return data(ele, 'upload', {
+    url: 'upload.url',
+    param: 'upload.param',
+    deleteUrl: 'delete.url',
+    deleteParam: 'delete.param',
+    allowedTypes: 'allowed_types',
+    additionalParam: 'upload.additionalParams',
+    header: 'upload.headers',
+    deleteAdditionalParam: 'delete.additionalParams',
+    deleteHeader: 'delete.headers',
+  });
 }

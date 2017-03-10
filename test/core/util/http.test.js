@@ -1,5 +1,5 @@
-import http from '../../../src/js/core/util/http';
 import should from 'should';
+import http from '../../../src/js/core/util/http';
 
 export function run() {
   let data = undefined;

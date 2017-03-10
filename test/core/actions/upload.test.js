@@ -1,11 +1,11 @@
-import should from 'should';
+import should from 'should'; // eslint-disable-line no-unused-vars
 import sinon from 'sinon';
 import upload from '../../../src/js/core/actions/upload';
 import options from '../../../src/js/core/util/options';
 import events from '../../../src/js/core/util/events';
 import queue from '../../../src/js/core/util/queue';
 
-describe.only('fileUpload', () => {
+describe('fileUpload', () => {
   let opts;
   let http;
   let ev;
@@ -81,7 +81,7 @@ describe.only('fileUpload', () => {
 
     up.upload(file);
 
-    mockListener.calledOnce.should.be.True;
+    mockListener.calledOnce.should.be.True();
     mockListener.firstCall.args.should.be.eql([{
       type: 'upload.started',
       file,
@@ -130,7 +130,7 @@ describe.only('fileUpload', () => {
 
     up.upload(file);
 
-    mockListener.calledOnce.should.be.True;
+    mockListener.calledOnce.should.be.True();
     mockListener.firstCall.args.should.be.eql([{
       type: 'upload.started',
       file,
@@ -156,7 +156,7 @@ describe.only('fileUpload', () => {
 
     up.upload(file);
 
-    mockListener.calledOnce.should.be.True;
+    mockListener.calledOnce.should.be.True();
     mockListener.firstCall.args.should.be.eql([{
       type: 'upload.rejected',
       file,

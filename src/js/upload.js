@@ -3,40 +3,8 @@ import core from './core';
 import http from './core/util/http';
 import events from './core/util/events';
 import options from './core/util/options';
-
-const DEFAULTS = {
-  types: {
-    images: ['image/jpg', 'image/jpeg', 'image/png', 'image/gif'],
-  },
-  allowed_types: ['images'],
-};
-
-function isObject(item) {
-  return (item && typeof item === 'object' && !Array.isArray(item));
-}
-
-function merge(target, ...objs) {
-  if (!objs.length) return target;
-  const next = objs.shift();
-
-  if (isObject(target) && isObject(next)) {
-    Object.keys(next)
-      .forEach((key) => {
-        if (isObject(next[key])) {
-          if (!target[key]) {
-            target[key] = {};
-          }
-          merge(target[key], next[key]);
-        } else {
-          Object.assign(target, {
-            [key]: next[key],
-          });
-        }
-      });
-  }
-
-  return merge(target, ...objs);
-}
+import merge from './core/util/merge';
+import defaults from './defaults';
 
 /**
  * Allows plain vanilla JavaScript access to the UploadJs Widget.
@@ -50,16 +18,18 @@ function merge(target, ...objs) {
  */
 window.UploadJs = class UploadJs {
   constructor(ele, opts = {}) {
-    const _container = parse(ele);
+    const _events = events([
+      'upload.started',
+    ]);
+    const _uiEvents = events([
+      'file.picked',
+    ]);
+    _events.emit(_uiEvents);
 
-    const _events = events();
-    const _opts = options(merge({}, DEFAULTS, opts));
+    const _dataOpts = parse(ele, _uiEvents);
+    const _opts = options(merge({}, defaults, _dataOpts, opts));
     const _core = core(http, _events, _opts);
 
-    _container.onPicked((files) => _core.upload(...files));
-
-    _events.on('upload.started', ({ file }) => {
-      _container.add(file);
-    });
+    _uiEvents.on('file.picked', ev => _core.upload(ev.file));
   }
 };

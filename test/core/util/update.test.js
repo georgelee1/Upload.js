@@ -1,5 +1,5 @@
-import update from '../../../src/js/core/util/update';
 import should from 'should'; // eslint-disable-line no-unused-vars
+import update from '../../../src/js/core/util/update';
 
 describe('Update', () => {
   it('should trigger the handler when the value is set', function(done) {

@@ -70,6 +70,54 @@ export function append(ele, ...appendChildren) {
   });
 }
 
+function makeMarkerKey(key, postfix) {
+  return `up-marker-${key}-${postfix}`;
+}
+
+/**
+ * Creates a marker that is appended to the element with the defined key.
+ */
+export function marker(ele, key) {
+  append(
+    ele,
+    document.createComment(makeMarkerKey(key, 'start')),
+    document.createComment(makeMarkerKey(key, 'end'))
+  );
+}
+
+/**
+ * Replaces the content inside the marker and replaces it with the supplied contents
+ */
+export function replaceMarker(ele, key, ...contents) {
+  const markerStart = makeMarkerKey(key, 'start');
+  const markerEnd = makeMarkerKey(key, 'end');
+  let processing = false;
+
+  let node = ele.firstChild;
+  const insert = n => node.parentNode.insertBefore(n, node);
+
+  while (node) {
+    if (node.nodeType === 8) {
+      if (node.nodeValue === markerStart) {
+        processing = true;
+        node = node.nextSibling;
+        continue;
+      } else if (node.nodeValue === markerEnd) {
+        contents.forEach(insert);
+        return;
+      }
+    }
+
+    if (processing) {
+      node = node.nextSibling;
+      node.parentElement.removeChild(node);
+      continue;
+    }
+
+    node = node.nextSibling;
+  }
+}
+
 /**
  * Removes all child nodes from the passed element.
  */
@@ -95,4 +143,55 @@ export function attrs(ele, ...attributes) {
  */
 export function on(ele, event, handler) {
   ele.addEventListener(event, handler);
+}
+
+/**
+ * Sets the value on the object using the path. Grows the object deep until the end of the path is
+ * reached.
+ */
+export function set(obj, path, val) {
+  let setOn = obj;
+  const parts = path.split('.');
+  const last = parts.pop();
+  parts.forEach((part) => {
+    let next = setOn[part];
+    if (!next) {
+      next = {};
+      setOn[part] = next;
+    }
+    setOn = next;
+  });
+  if (typeof setOn === 'object') {
+    setOn[last] = val;
+  }
+}
+
+/**
+ * Extracts data attributes from the passed element where they start with the prefix and returns a
+ * key object. An optional shape parameter can be defined that defines the shape of the result.
+ * For example:
+ * shape = { test: 'some.bit', other: 'thing' }
+ * <... data-test-key1="val" data-other="val2" />
+ * result = { some: { bit: { key1: 'val' } }, thing: 'val2' }
+ */
+export function data(ele, prefix = '', shape = {}) {
+  const result = {};
+  Object.keys(ele.dataset)
+    .filter(key => key.startsWith(prefix))
+    .forEach((key) => {
+      let adjusted = key.substr(prefix.length);
+      adjusted = adjusted.charAt(0).toLowerCase() + adjusted.slice(1);
+      let path = '';
+      let best = 0;
+      Object.keys(shape).forEach((sk) => {
+        const idx = adjusted.indexOf(sk);
+        if (idx >= 0 && best < sk.length) {
+          best = sk.length;
+          const rest = adjusted.slice(sk.length);
+          path = shape[sk] + (rest ? `.${rest.charAt(0).toLowerCase() + rest.slice(1)}` : '');
+        }
+      });
+      set(result, path || adjusted, ele.dataset[key]);
+    });
+  return result;
 }

@@ -1,5 +1,5 @@
-import queue from '../../../src/js/core/util/queue';
 import should from 'should'; // eslint-disable-line no-unused-vars
+import queue from '../../../src/js/core/util/queue';
 
 describe('Queue', () => {
   describe('#offer', () => {

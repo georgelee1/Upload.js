@@ -1,5 +1,5 @@
-import cache from '../../../src/js/core/util/cache';
 import should from 'should';
+import cache from '../../../src/js/core/util/cache';
 
 describe('cache', () => {
   describe('#put', () => {

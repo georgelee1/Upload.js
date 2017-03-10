@@ -17,21 +17,21 @@ describe('types', () => {
 
     it('should call the callback with true as the type is explicitly allowed', (done) => {
       t.isAllowed('val3', (r) => {
-        r.should.be.True;
+        r.should.be.True();
         done();
       });
     });
 
     it('should call the callback with true as the type is implicitly allowed', (done) => {
       t.isAllowed('val1', (r) => {
-        r.should.be.True;
+        r.should.be.True();
         done();
       });
     });
 
     it('should call the callback with false as the type is not allowed', (done) => {
       t.isAllowed('val4', (r) => {
-        r.should.be.False;
+        r.should.be.False();
         done();
       });
     });
@@ -40,15 +40,11 @@ describe('types', () => {
   describe('Async defined options', () => {
     let t;
 
-    before(() => {
+    beforeEach(() => {
       t = types(options({
         types: (done) => {
           setTimeout(() => {
-            done({
-              types: {
-                test: ['Val1', 'val2'],
-              },
-            });
+            done({ test: ['Val1', 'val2'] });
           }, 50);
         },
         allowed_types: (done) => {
@@ -65,8 +61,8 @@ describe('types', () => {
         firstCall = r;
       });
       t.isAllowed('val3', (r) => {
-        should(firstCall).be.True;
-        r.should.be.True;
+        should(firstCall).be.True();
+        r.should.be.True();
         done();
       });
     });
@@ -79,8 +75,8 @@ describe('types', () => {
           firstCall = r;
         });
         t.isAllowed('val1', (r) => {
-          should(firstCall).be.False;
-          r.should.be.True;
+          should(firstCall).be.False();
+          r.should.be.True();
           done();
         });
       });

@@ -34,7 +34,6 @@ export default function fileUpload(http, events, opts, queue) {
    */
   function upload(...files) {
     files.forEach((file) => {
-      console.info(file.type);
       _types.isAllowed(file.type, (allowed) => {
         if (allowed) {
           events.trigger('upload.started', { file });
