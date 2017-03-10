@@ -33,21 +33,16 @@ export default function container(ele, items, events) {
   const _add = makeAdd();
   addClass(ele, 'uploadjs');
 
-  items.forEach((i) => {
-    i.appendTo(_items);
-  });
-
+  append(_items, ...items);
   append(_actions, _add);
   append(ele, makePicker(_add, events));
 
   events.on('upload.started', ({ file }) => {
-    const i = item({
-      type: TYPE_IMAGE,
-      file,
-    });
-    items.push(i);
-    i.appendTo(_items);
+    const i = item({ type: TYPE_IMAGE, file, events });
+    append(_items, i);
   });
+
+  items.splice(0, items.length);
 
   return data(ele, 'upload', {
     url: 'upload.url',

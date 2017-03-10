@@ -2,15 +2,15 @@ import { children, empty, attrs } from '../util/dom';
 import item, { TYPE_IMAGE } from '../item';
 import container from '../container';
 
-function parseImage(ele) {
-  return item(Object.assign({ type: TYPE_IMAGE }, attrs(ele, 'src')));
+function parseImage(ele, events) {
+  return item(Object.assign({ type: TYPE_IMAGE }, attrs(ele, 'src'), { events }));
 }
 
 /**
  * The parse module parses the DOM element and returns a container wrapper element.
  */
 export default function parse(ele, events) {
-  const items = children(ele, 'img').map(img => parseImage(img));
+  const items = children(ele, 'img').map(img => parseImage(img, events));
   empty(ele);
   return container(ele, items, events);
 }

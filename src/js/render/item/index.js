@@ -22,6 +22,7 @@ export function imageRenderer(data) {
  * Map of renderers by type.
  */
 const renderers = {
+  NOOP: () => make('div'),
   [TYPE_IMAGE]: imageRenderer,
 };
 
@@ -36,33 +37,33 @@ function wrap(data) {
   append(root, data.ele);
   marker(root, 'status');
 
+  let _progress;
   if (isUploading) {
+    _progress = make('div', { class: 'progress' });
     replaceMarker(
       root,
       'status',
       make('div', { class: 'spinner' }),
       make('div', { class: 'icon upload' }),
-      make('div', { class: 'progress' })
+      _progress
     );
   }
 
-  return root;
+  return Object.assign({}, data, { ele: root, _progress });
 }
 
 /**
  * The item module is a wrapper around an item in the container that the user can interact with.
  */
 export default function item(data) {
-  let _wrapper;
+  const _wrapper = wrap((renderers[data.type] || renderers.NOOP)(data));
 
-  const renderer = renderers[data.type];
-  if (renderer) {
-    _wrapper = wrap(renderer(data));
-  }
+  data.events.on('upload.progress', ({ file, progress }) => {
+    if (file === data.file) {
+      const val = 0 - (100 - progress);
+      _wrapper._progress.style.transform = `translateX(${val}%)`;
+    }
+  });
 
-  return {
-    appendTo(ele) {
-      ele.appendChild(_wrapper);
-    },
-  };
+  return _wrapper.ele;
 }
