@@ -56,12 +56,54 @@ function wrap(data) {
 /**
  * Makes the actions bar DOM
  */
-function makeActions(ele) {
-  const actions = make('div', { class: 'actions' });
-  const del = make('div', { class: 'action del' });
-  append(actions, del);
-  append(del, make('div', { class: 'trash' }));
-  replaceMarker(ele, 'actions', actions);
+function makeActions(ele, data) {
+  if (data.id) {
+    const actions = make('div', { class: 'actions' });
+    const del = make('div', { class: 'action del' });
+    append(actions, del);
+    append(del, make('div', { class: 'trash' }));
+    replaceMarker(ele, 'actions', actions);
+  } else {
+    addClass(ele, 'static');
+  }
+}
+
+/**
+ * Makes the appropriate status icon and appends to the status marker. Then removes after a short
+ * period.
+ */
+function status(ele, st) {
+  const s = make('div', { class: `icon ${st}` });
+  append(s, make('i'));
+  replaceMarker(ele, 'status', s);
+
+  setTimeout(() => {
+    addClass(s, 'going');
+    setTimeout(() => {
+      replaceMarker(ele, 'status');
+      removeClass(s, 'going');
+    }, 2000);
+  }, 2000);
+}
+
+/**
+ * Add upload listeners to the events
+ */
+function onUpload(data, ele, progressEle) {
+  data.events.on('upload.progress', data.fileId, ({ progress }) => {
+    const val = 0 - (100 - progress);
+    progressEle.style.transform = `translateX(${val}%)`;
+  });
+
+  data.events.on('upload.done', data.fileId, ({ id }) => {
+    data.id = id;
+    status(ele, 'done');
+    removeClass(ele, 'uploading');
+    makeActions(ele, { id });
+
+    data.events.off('upload.progress', data.fileId);
+    data.events.off('upload.done', data.fileId);
+  });
 }
 
 /**
@@ -70,41 +112,10 @@ function makeActions(ele) {
 export default function item(data) {
   const _wrapper = wrap((renderers[data.type] || renderers.NOOP)(data));
 
-  if (data.id) {
-    makeActions(_wrapper.ele);
-  } else {
-    addClass(_wrapper.ele, 'static');
-  }
-
   if (data.file) {
-    data.events.on('upload.progress', data.id, ({ progress }) => {
-      const val = 0 - (100 - progress);
-      _wrapper._progress.style.transform = `translateX(${val}%)`;
-    });
-
-    data.events.on('upload.done', data.id, ({ id }) => {
-      const ele = make('div', { class: 'icon done' });
-      append(ele, make('i'));
-      replaceMarker(_wrapper.ele, 'status', ele);
-
-      data.fileId = id;
-
-      if (id) {
-        makeActions(_wrapper.ele);
-
-        setTimeout(() => {
-          addClass(ele, 'going');
-          setTimeout(() => {
-            replaceMarker(_wrapper.ele, 'status');
-            removeClass(ele, 'going');
-            removeClass(_wrapper.ele, 'uploading');
-          }, 2000);
-        }, 2000);
-      } else {
-        removeClass(_wrapper.ele, 'uploading');
-        addClass(_wrapper.ele, 'static');
-      }
-    });
+    onUpload(data, _wrapper.ele, _wrapper._progress);
+  } else {
+    makeActions(_wrapper.ele, data);
   }
 
   return _wrapper.ele;

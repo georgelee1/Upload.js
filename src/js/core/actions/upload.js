@@ -9,7 +9,7 @@ export default function fileUpload(http, events, opts, queue) {
   /**
    * @private
    */
-  function _peformUpload(file, done) {
+  function _peformUpload(file, id, done) {
     opts.get('upload.url', 'upload.param', 'upload.additionalParams', 'upload.headers',
       (url, param, additionalParams, headers) => {
         const params = Object.assign({}, additionalParams, {
@@ -17,13 +17,13 @@ export default function fileUpload(http, events, opts, queue) {
         });
 
         http(url, params, headers)
-          .progress(progress => events.trigger('upload.progress', { file, progress }))
+          .progress(progress => events.trigger('upload.progress', { file, id, progress }))
           .done(({ uploadImageId }) => {
-            events.trigger('upload.done', { file, id: uploadImageId });
+            events.trigger('upload.done', { file, id, uploadImageId });
             done();
           })
           .fail(() => {
-            events.trigger('upload.failed', { file });
+            events.trigger('upload.failed', { file, id });
             done();
           });
       });
@@ -33,13 +33,13 @@ export default function fileUpload(http, events, opts, queue) {
    * Upload one or more files.
    */
   function upload(...files) {
-    files.forEach((file) => {
+    files.forEach(({ file, id }) => {
       _types.isAllowed(file.type, (allowed) => {
         if (allowed) {
-          events.trigger('upload.started', { file });
-          queue.offer((done) => _peformUpload(file, done));
+          events.trigger('upload.started', { file, id });
+          queue.offer((done) => _peformUpload(file, id, done));
         } else {
-          events.trigger('upload.rejected', { file, rejected: 'type' });
+          events.trigger('upload.rejected', { file, id, rejected: 'type' });
         }
       });
     });

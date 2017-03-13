@@ -32,6 +32,6 @@ window.UploadJs = class UploadJs {
     const _opts = options(merge({}, defaults, _dataOpts, opts));
     const _core = core(http, _events, _opts);
 
-    _uiEvents.on('file.picked', ev => _core.upload(ev.file));
+    _uiEvents.on('file.picked', ev => _core.upload(ev));
   }
 };

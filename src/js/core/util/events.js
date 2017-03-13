@@ -40,6 +40,22 @@ export default function events(known = []) {
   }
 
   /**
+   * Unregister event listener
+   */
+  function off(key, id) {
+    if (_byKey[key]) {
+      const actualId = isDefined(id) ? (id).toString() : false;
+      if (actualId) {
+        delete _byKey[key][actualId];
+      } else {
+        _byKey[key] = {
+          [ALL]: [],
+        };
+      }
+    }
+  }
+
+  /**
    * Triggers event with key and parameters
    */
   function trigger(key, event) {
@@ -65,6 +81,7 @@ export default function events(known = []) {
 
   return {
     on,
+    off,
     trigger,
     emit,
     _parent(ev) {

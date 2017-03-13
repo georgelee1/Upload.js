@@ -16,7 +16,7 @@ function makePicker(trigger, events) {
   on(ele, 'change', () => {
     const id = Date.now();
     for (let x = 0; x < ele.files.length; x++) {
-      events.trigger('file.picked', { id: `${x}_${id}`, file: ele.files.item(x) });
+      events.trigger('file.picked', { file: ele.files.item(x), id: `${x}_${id}` });
     }
   });
   on(trigger, 'click', ele.click.bind(ele));
@@ -27,19 +27,20 @@ function makePicker(trigger, events) {
  * The container module is a wrapper around the upload container.
  */
 export default function container(ele, items, events) {
+  addClass(ele, 'uploadjs');
+
   const _items = make('div', { class: 'uploadjs-container' });
+  append(_items, ...items);
+
   const _actions = make('div', { class: 'uploadjs-container' });
   append(ele, _items, _actions);
 
   const _add = makeAdd();
-  addClass(ele, 'uploadjs');
-
-  append(_items, ...items);
   append(_actions, _add);
   append(ele, makePicker(_add, events));
 
-  events.on('upload.started', ({ id, file }) => {
-    const i = item({ type: TYPE_IMAGE, id, file, events });
+  events.on('upload.started', ({ file, id }) => {
+    const i = item({ type: TYPE_IMAGE, fileId: id, file, events });
     append(_items, i);
   });
 
