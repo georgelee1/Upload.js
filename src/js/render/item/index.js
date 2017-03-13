@@ -1,4 +1,4 @@
-import { make, append, marker, replaceMarker, addClass, removeClass } from '../util/dom';
+import { make, append, marker, replaceMarker, addClass, removeClass, on } from '../util/dom';
 
 export const TYPE_IMAGE = 'image';
 
@@ -63,6 +63,8 @@ function makeActions(ele, data) {
     append(actions, del);
     append(del, make('div', { class: 'trash' }));
     replaceMarker(ele, 'actions', actions);
+
+    on(del, 'click', () => data.events.trigger('file.delete', { id: data.id }));
   } else {
     addClass(ele, 'static');
   }
@@ -87,6 +89,29 @@ function status(ele, st) {
 }
 
 /**
+ * Remove all upload events
+ */
+function removeUploadEvents(data) {
+  data.events.off('upload.progress', data.fileId);
+  data.events.off('upload.done', data.fileId);
+  data.events.off('upload.failed', data.fileId);
+}
+
+/**
+ * Remove the item
+ */
+function remove(ele, data) {
+  setTimeout(() => {
+    addClass(ele, 'removed');
+    setTimeout(() => {
+      ele.parentNode.removeChild(ele);
+    }, 1000);
+  }, 3000);
+
+  removeUploadEvents(data);
+}
+
+/**
  * Add upload listeners to the events
  */
 function onUpload(data, ele, progressEle) {
@@ -101,8 +126,13 @@ function onUpload(data, ele, progressEle) {
     removeClass(ele, 'uploading');
     makeActions(ele, { id });
 
-    data.events.off('upload.progress', data.fileId);
-    data.events.off('upload.done', data.fileId);
+    removeUploadEvents(data);
+  });
+
+  data.events.on('upload.failed', data.fileId, () => {
+    addClass(ele, 'stopped');
+    status(ele, 'error');
+    remove(ele, data);
   });
 }
 

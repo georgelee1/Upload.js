@@ -25,6 +25,7 @@ window.UploadJs = class UploadJs {
     ]);
     const _uiEvents = events([
       'file.picked',
+      'file.delete',
     ]);
     _events.emit(_uiEvents);
 
