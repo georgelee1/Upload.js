@@ -3,7 +3,11 @@ import item, { TYPE_IMAGE } from '../item';
 import container from '../container';
 
 function parseImage(ele, events) {
-  return item(Object.assign({ type: TYPE_IMAGE }, attrs(ele, 'src'), { events }));
+  return item(
+    Object.assign({ type: TYPE_IMAGE },
+      attrs(ele, 'src'), { id: ele.dataset.uploadImageId, events }
+    )
+  );
 }
 
 /**

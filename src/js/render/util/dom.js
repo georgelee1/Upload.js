@@ -94,7 +94,7 @@ export function replaceMarker(ele, key, ...contents) {
   let processing = false;
 
   let node = ele.firstChild;
-  const insert = n => node.parentNode.insertBefore(n, node);
+  const insert = (to, n) => node.parentNode.insertBefore(n, to);
 
   while (node) {
     if (node.nodeType === 8) {
@@ -103,14 +103,15 @@ export function replaceMarker(ele, key, ...contents) {
         node = node.nextSibling;
         continue;
       } else if (node.nodeValue === markerEnd) {
-        contents.forEach(insert);
+        contents.forEach(insert.bind(undefined, node));
         return;
       }
     }
 
     if (processing) {
-      node = node.nextSibling;
-      node.parentElement.removeChild(node);
+      const next = node.nextSibling;
+      node.parentNode.removeChild(node);
+      node = next;
       continue;
     }
 

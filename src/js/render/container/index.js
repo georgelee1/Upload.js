@@ -14,8 +14,9 @@ function makePicker(trigger, events) {
     multiple: 'multiple',
   });
   on(ele, 'change', () => {
+    const id = Date.now();
     for (let x = 0; x < ele.files.length; x++) {
-      events.trigger('file.picked', { file: ele.files.item(x) });
+      events.trigger('file.picked', { id: `${x}_${id}`, file: ele.files.item(x) });
     }
   });
   on(trigger, 'click', ele.click.bind(ele));
@@ -37,8 +38,8 @@ export default function container(ele, items, events) {
   append(_actions, _add);
   append(ele, makePicker(_add, events));
 
-  events.on('upload.started', ({ file }) => {
-    const i = item({ type: TYPE_IMAGE, file, events });
+  events.on('upload.started', ({ id, file }) => {
+    const i = item({ type: TYPE_IMAGE, id, file, events });
     append(_items, i);
   });
 

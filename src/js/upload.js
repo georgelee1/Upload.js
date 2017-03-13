@@ -21,6 +21,7 @@ window.UploadJs = class UploadJs {
     const _events = events([
       'upload.started',
       'upload.progress',
+      'upload.done',
     ]);
     const _uiEvents = events([
       'file.picked',

@@ -5,7 +5,7 @@ describe('events', () => {
   let e;
   let e2;
 
-  before(() => {
+  beforeEach(() => {
     e = events();
     e2 = events();
   });
@@ -50,6 +50,43 @@ describe('events', () => {
     results.should.be.eql([
       { type: 'test', file: 'one' },
       { type: 'test', file: 'one' },
+    ]);
+  });
+
+  it('should trigger event listeners for id specifc and global', () => {
+    const results = [];
+    e.on('test', (event) => {
+      results.push([0, event]);
+    });
+    e.on('test', 1, (event) => {
+      results.push([1, event]);
+    });
+    e.on('test', 2, (event) => {
+      results.push([2, event]);
+    });
+    e.trigger('test', { id: '1', file: 'one' });
+
+    results.should.be.eql([
+      [1, { type: 'test', id: '1', file: 'one' }],
+      [0, { type: 'test', id: '1', file: 'one' }],
+    ]);
+  });
+
+  it('should trigger event listeners for global only', () => {
+    const results = [];
+    e.on('test', (event) => {
+      results.push([0, event]);
+    });
+    e.on('test', 1, (event) => {
+      results.push([1, event]);
+    });
+    e.on('test', 2, (event) => {
+      results.push([2, event]);
+    });
+    e.trigger('test', { file: 'one' });
+
+    results.should.be.eql([
+      [0, { type: 'test', file: 'one' }],
     ]);
   });
 });

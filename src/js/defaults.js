@@ -5,11 +5,6 @@ module.exports = {
   max: 10,
 
   /**
-   * boolean | Whether or not files can be deleted
-   */
-  deletable: true,
-
-  /**
    * object: {
    *   key: array
    * }
