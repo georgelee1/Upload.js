@@ -48,6 +48,7 @@ describe('fileUpload', () => {
     };
 
     const mockListener = sinon.spy();
+    ev.on('upload.added', mockListener);
     ev.on('upload.started', mockListener);
     ev.on('upload.rejected', mockListener);
     ev.on('upload.progress', mockListener);
@@ -60,20 +61,20 @@ describe('fileUpload', () => {
         uploadImageId: '111',
       });
 
-      mockListener.callCount.should.be.equal(4);
-      mockListener.getCall(1).args.should.be.eql([{
+      mockListener.callCount.should.be.equal(5);
+      mockListener.getCall(2).args.should.be.eql([{
         type: 'upload.progress',
         file,
         id: 222,
         progress: 10,
       }]);
-      mockListener.getCall(2).args.should.be.eql([{
+      mockListener.getCall(3).args.should.be.eql([{
         type: 'upload.progress',
         file,
         id: 222,
         progress: 60,
       }]);
-      mockListener.getCall(3).args.should.be.eql([{
+      mockListener.getCall(4).args.should.be.eql([{
         type: 'upload.progress',
         file,
         id: 222,
@@ -85,8 +86,13 @@ describe('fileUpload', () => {
 
     up.upload({ file, id: 222 });
 
-    mockListener.calledOnce.should.be.True();
+    mockListener.calledTwice.should.be.True();
     mockListener.firstCall.args.should.be.eql([{
+      type: 'upload.added',
+      id: 222,
+      file,
+    }]);
+    mockListener.secondCall.args.should.be.eql([{
       type: 'upload.started',
       id: 222,
       file,
@@ -96,9 +102,67 @@ describe('fileUpload', () => {
       mockHttp.progress.callArgWith(0, 10);
       mockHttp.progress.callArgWith(0, 60);
       mockHttp.progress.callArgWith(0, 100);
-      mockHttp.done.callArgWith(0, { uploadImageId: '111' });
+      mockHttp.done.callArgWith(0, { success: true, uploadImageId: '111' });
     }, 10);
   });
+
+  it('When uploading a file and it fails because success flag is false it should call the fail ' +
+    'listener',
+    (done) => {
+      const mockHttp = {};
+      mockHttp.progress = sinon.stub().returns(mockHttp);
+      mockHttp.done = sinon.stub().returns(mockHttp);
+      mockHttp.fail = sinon.stub().returns(mockHttp);
+
+      http.returns(mockHttp);
+
+      const file = {
+        type: 'jpeg',
+      };
+
+      const mockListener = sinon.spy();
+      ev.on('upload.added', mockListener);
+      ev.on('upload.started', mockListener);
+      ev.on('upload.rejected', mockListener);
+      ev.on('upload.progress', mockListener);
+      ev.on('upload.done', mockListener);
+      ev.on('upload.failed', (event) => {
+        event.should.be.eql({
+          type: 'upload.failed',
+          id: 333,
+          file,
+        });
+
+        mockListener.callCount.should.be.equal(3);
+        mockListener.getCall(2).args.should.be.eql([{
+          type: 'upload.progress',
+          file,
+          id: 333,
+          progress: 10,
+        }]);
+
+        done();
+      });
+
+      up.upload({ file, id: 333 });
+
+      mockListener.calledTwice.should.be.True();
+      mockListener.firstCall.args.should.be.eql([{
+        type: 'upload.added',
+        id: 333,
+        file,
+      }]);
+      mockListener.secondCall.args.should.be.eql([{
+        type: 'upload.started',
+        id: 333,
+        file,
+      }]);
+
+      setTimeout(() => {
+        mockHttp.progress.callArgWith(0, 10);
+        mockHttp.fail.callArgWith(0);
+      }, 10);
+    });
 
   it('When uploading a file and it fails it should call the fail listener', (done) => {
     const mockHttp = {};
@@ -113,6 +177,7 @@ describe('fileUpload', () => {
     };
 
     const mockListener = sinon.spy();
+    ev.on('upload.added', mockListener);
     ev.on('upload.started', mockListener);
     ev.on('upload.rejected', mockListener);
     ev.on('upload.progress', mockListener);
@@ -124,8 +189,8 @@ describe('fileUpload', () => {
         file,
       });
 
-      mockListener.callCount.should.be.equal(2);
-      mockListener.getCall(1).args.should.be.eql([{
+      mockListener.callCount.should.be.equal(3);
+      mockListener.getCall(2).args.should.be.eql([{
         type: 'upload.progress',
         file,
         id: 333,
@@ -137,8 +202,13 @@ describe('fileUpload', () => {
 
     up.upload({ file, id: 333 });
 
-    mockListener.calledOnce.should.be.True();
+    mockListener.calledTwice.should.be.True();
     mockListener.firstCall.args.should.be.eql([{
+      type: 'upload.added',
+      id: 333,
+      file,
+    }]);
+    mockListener.secondCall.args.should.be.eql([{
       type: 'upload.started',
       id: 333,
       file,
@@ -156,6 +226,7 @@ describe('fileUpload', () => {
     };
 
     const mockListener = sinon.spy();
+    ev.on('upload.added', mockListener);
     ev.on('upload.started', mockListener);
     ev.on('upload.rejected', mockListener);
     ev.on('upload.progress', mockListener);

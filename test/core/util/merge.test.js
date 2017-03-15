@@ -33,7 +33,7 @@ describe('Merge', () => {
       },
     };
 
-    const result = merge({}, obj1, obj2, obj3);
+    const result = merge({}, [obj1, obj2, obj3]);
     result.should.be.eql({
       test: {
         testA: {

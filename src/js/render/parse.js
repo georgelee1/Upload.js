@@ -13,8 +13,8 @@ function parseImage(ele, events) {
 /**
  * The parse module parses the DOM element and returns a container wrapper element.
  */
-export default function parse(ele, events) {
+export default function parse(ele, events, defaultOpt, opts) {
   const items = children(ele, 'img').map(img => parseImage(img, events));
   empty(ele);
-  return container(ele, items, events);
+  return container(ele, items, events, defaultOpt, opts);
 }

@@ -2,9 +2,7 @@ import parse from './render/parse';
 import core from './core';
 import http from './core/util/http';
 import events from './core/util/events';
-import options from './core/util/options';
-import merge from './core/util/merge';
-import defaults from './defaults';
+import defaultOpts from './defaults';
 
 /**
  * Allows plain vanilla JavaScript access to the UploadJs Widget.
@@ -32,11 +30,11 @@ window.UploadJs = class UploadJs {
     const _uiEvents = events([
       'file.picked',
       'file.delete',
+      'item.removed',
     ]);
     this._events.emit(_uiEvents);
 
-    const _dataOpts = parse(ele, _uiEvents);
-    const _opts = options(merge({}, defaults, _dataOpts, opts));
+    const _opts = parse(ele, _uiEvents, defaultOpts, opts);
     const _core = core(http, this._events, _opts);
 
     _uiEvents.on('file.picked', ev => _core.upload(ev));

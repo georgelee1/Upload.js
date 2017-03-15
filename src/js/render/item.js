@@ -79,21 +79,25 @@ function status(ele, st, done) {
  * Remove all upload events
  */
 function removeUploadEvents(data) {
-  data.events.off('upload.added', data.fileId);
-  data.events.off('upload.started', data.fileId);
-  data.events.off('upload.progress', data.fileId);
-  data.events.off('upload.done', data.fileId);
-  data.events.off('upload.failed', data.fileId);
+  if (data.fileId) {
+    data.events.off('upload.added', data.fileId);
+    data.events.off('upload.started', data.fileId);
+    data.events.off('upload.progress', data.fileId);
+    data.events.off('upload.done', data.fileId);
+    data.events.off('upload.failed', data.fileId);
+  }
 }
 
 /**
  * Remove all delete events
  */
 function removeDeleteEvents(data) {
-  data.events.off('delete.added', data.fileId);
-  data.events.off('delete.started', data.fileId);
-  data.events.off('delete.done', data.fileId);
-  data.events.off('delete.failed', data.fileId);
+  if (data.id) {
+    data.events.off('delete.added', data.id);
+    data.events.off('delete.started', data.id);
+    data.events.off('delete.done', data.id);
+    data.events.off('delete.failed', data.id);
+  }
 }
 
 /**
@@ -103,7 +107,8 @@ function remove(ele, data) {
   addClass(ele, 'removed');
   setTimeout(() => {
     ele.parentNode.removeChild(ele);
-  }, 1000);
+    data.events.trigger('item.removed', { id: data.id });
+  }, 600);
 
   removeUploadEvents(data);
   removeDeleteEvents(data);

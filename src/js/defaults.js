@@ -2,7 +2,7 @@ module.exports = {
   /**
    * number | Maxiumum number of files that UploadJs will allow to contain.
    */
-  max: 10,
+  max: Infinity,
 
   /**
    * object: {

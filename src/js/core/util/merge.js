@@ -2,7 +2,10 @@ function isObject(item) {
   return (item && typeof item === 'object' && !Array.isArray(item));
 }
 
-export default function merge(target, ...objs) {
+export default function merge(target, objs) {
+  if (!Array.isArray(objs)) {
+    objs = [objs];
+  }
   if (!objs.length) return target;
   const next = objs.shift();
 
@@ -22,5 +25,5 @@ export default function merge(target, ...objs) {
       });
   }
 
-  return merge(target, ...objs);
+  return merge(target, objs);
 }
