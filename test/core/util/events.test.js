@@ -20,6 +20,7 @@ describe('events', () => {
     });
 
     e.trigger('test', { file: 'one' });
+
     results.should.be.eql([
       { type: 'test', file: 'one' },
       { type: 'test', file: 'one' },
@@ -45,6 +46,7 @@ describe('events', () => {
     e2.on('test', (event) => {
       results.push(event);
     });
+
     e.trigger('test', { file: 'one' });
 
     results.should.be.eql([
@@ -53,7 +55,7 @@ describe('events', () => {
     ]);
   });
 
-  it('should trigger event listeners for id specifc and global', () => {
+  it('should trigger event listeners for global and specific when event is specific', () => {
     const results = [];
     e.on('test', (event) => {
       results.push([0, event]);
@@ -64,6 +66,7 @@ describe('events', () => {
     e.on('test', 2, (event) => {
       results.push([2, event]);
     });
+
     e.trigger('test', { id: '1', file: 'one' });
 
     results.should.be.eql([
@@ -72,7 +75,7 @@ describe('events', () => {
     ]);
   });
 
-  it('should trigger event listeners for global only', () => {
+  it('should trigger event listeners for global and specific when event is global', () => {
     const results = [];
     e.on('test', (event) => {
       results.push([0, event]);
@@ -83,14 +86,17 @@ describe('events', () => {
     e.on('test', 2, (event) => {
       results.push([2, event]);
     });
+
     e.trigger('test', { file: 'one' });
 
     results.should.be.eql([
+      [1, { type: 'test', file: 'one' }],
+      [2, { type: 'test', file: 'one' }],
       [0, { type: 'test', file: 'one' }],
     ]);
   });
 
-  it('should not trigger events listeners that have stopped listening', () => {
+  it('should not trigger events listeners that have stopped listening by id', () => {
     const results = [];
     e.on('test', (event) => {
       results.push([0, event]);
@@ -102,10 +108,68 @@ describe('events', () => {
       results.push([2, event]);
     });
     e.off('test', 1);
+
     e.trigger('test', { file: 'one' });
 
     results.should.be.eql([
       [0, { type: 'test', file: 'one' }],
     ]);
   });
+
+  it('should not trigger events listeners that have stopped listening by handler', () => {
+    const results = [];
+    e.on('test', (event) => {
+      results.push([0, event]);
+    });
+    e.on('test', 1, (event) => {
+      results.push([1, event]);
+    });
+    const handler = (event) => {
+      results.push([2, event]);
+    };
+    e.on('test', 1, handler);
+    e.off('test', handler);
+
+    e.trigger('test', { file: 'one' });
+
+    results.should.be.eql([
+      [1, { type: 'test', file: 'one' }],
+      [0, { type: 'test', file: 'one' }],
+    ]);
+  });
+
+  it('should not trigger events listeners that have stopped listening by handler and id',
+    () => {
+      const results = [];
+      e.on('test', (event) => {
+        results.push([0, event]);
+      });
+      e.on('test', 1, (event) => {
+        results.push([1, event]);
+      });
+      const handler = (event) => {
+        results.push([2, event]);
+      };
+      e.on('test', 1, handler);
+      e.off('test', 2, handler);
+
+      e.trigger('test', { file: 'one' });
+
+      results.should.be.eql([
+        [1, { type: 'test', file: 'one' }],
+        [2, { type: 'test', file: 'one' }],
+        [0, { type: 'test', file: 'one' }],
+      ]);
+
+      results.splice(0, results.length);
+
+      e.off('test', 1, handler);
+
+      e.trigger('test', { file: 'one' });
+
+      results.should.be.eql([
+        [1, { type: 'test', file: 'one' }],
+        [0, { type: 'test', file: 'one' }],
+      ]);
+    });
 });

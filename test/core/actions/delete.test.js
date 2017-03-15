@@ -44,10 +44,10 @@ describe('fileDelete', () => {
     http.returns(mockHttp);
 
     const mockListener = sinon.spy();
-    ev.on('delete.added', mockListener);
-    ev.on('delete.started', mockListener);
-    ev.on('delete.fail', mockListener);
-    ev.on('delete.done', (event) => {
+    ev.on('delete.added', 111, mockListener);
+    ev.on('delete.started', 111, mockListener);
+    ev.on('delete.fail', 111, mockListener);
+    ev.on('delete.done', 111, (event) => {
       event.should.be.eql({
         type: 'delete.done',
         id: 111,
@@ -86,10 +86,10 @@ describe('fileDelete', () => {
       http.returns(mockHttp);
 
       const mockListener = sinon.spy();
-      ev.on('delete.added', mockListener);
-      ev.on('delete.started', mockListener);
-      ev.on('delete.done', mockListener);
-      ev.on('delete.failed', (event) => {
+      ev.on('delete.added', 333, mockListener);
+      ev.on('delete.started', 333, mockListener);
+      ev.on('delete.done', 333, mockListener);
+      ev.on('delete.failed', 333, (event) => {
         event.should.be.eql({
           type: 'delete.failed',
           id: 333,
@@ -126,10 +126,10 @@ describe('fileDelete', () => {
     http.returns(mockHttp);
 
     const mockListener = sinon.spy();
-    ev.on('delete.added', mockListener);
-    ev.on('delete.started', mockListener);
-    ev.on('delete.done', mockListener);
-    ev.on('delete.failed', (event) => {
+    ev.on('delete.added', 444, mockListener);
+    ev.on('delete.started', 444, mockListener);
+    ev.on('delete.done', 444, mockListener);
+    ev.on('delete.failed', 444, (event) => {
       event.should.be.eql({
         type: 'delete.failed',
         id: 444,

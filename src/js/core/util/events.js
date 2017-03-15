@@ -4,12 +4,12 @@ const ALL = '$all';
  * The events module handles registering of event listeners and triggering of events.
  */
 export default function events(known = []) {
-  const _byKey = {};
-  const _emit = [];
-  const _parents = [];
+  let _byKey = {};
+  let _emit = [];
+  let _parents = [];
 
   function isDefined(val) {
-    return typeof val !== 'undefined' && !(typeof val === 'object' && !val);
+    return val && typeof val !== 'undefined' && !(typeof val === 'object' && !val);
   }
 
   /**
@@ -42,11 +42,35 @@ export default function events(known = []) {
   /**
    * Unregister event listener
    */
-  function off(key, id) {
+  function off(key, id, handler) {
     if (_byKey[key]) {
+      if (typeof id === 'function') {
+        handler = id;
+        id = false;
+      }
       const actualId = isDefined(id) ? (id).toString() : false;
       if (actualId) {
-        delete _byKey[key][actualId];
+        if (handler) {
+          const handlers = _byKey[key][actualId];
+          if (handlers) {
+            const idx = handlers.indexOf(handler);
+            if (idx >= 0) {
+              handlers.splice(idx, 1);
+            }
+          }
+        } else {
+          delete _byKey[key][actualId];
+        }
+      } else if (handler) {
+        Object.keys(_byKey[key]).forEach((i) => {
+          const handlers = _byKey[key][i];
+          if (handlers) {
+            const idx = handlers.indexOf(handler);
+            if (idx >= 0) {
+              handlers.splice(idx, 1);
+            }
+          }
+        });
       } else {
         _byKey[key] = {
           [ALL]: [],
@@ -60,11 +84,15 @@ export default function events(known = []) {
    */
   function trigger(key, event) {
     if (_byKey[key]) {
-      const id = isDefined(event.id) ? (event.id).toString() : false;
-      if (id && _byKey[key][id]) {
-        _byKey[key][id].forEach(listener => listener(Object.assign({ type: key }, event)));
+      const id = event && isDefined(event.id) ? (event.id).toString() : false;
+      if (id) {
+        (_byKey[key][id] || []).forEach(listener => listener(Object.assign({ type: key }, event)));
+        _byKey[key][ALL].forEach(listener => listener(Object.assign({ type: key }, event)));
+      } else {
+        Object.keys(_byKey[key]).forEach((i) => {
+          _byKey[key][i].forEach(listener => listener(Object.assign({ type: key }, event)));
+        });
       }
-      _byKey[key][ALL].forEach(listener => listener(Object.assign({ type: key }, event)));
     }
     _emit.forEach(ev => ev.trigger(key, event));
   }
@@ -79,6 +107,15 @@ export default function events(known = []) {
     }
   }
 
+  /**
+   * Removes all listeners from the events
+   */
+  function clear() {
+    _byKey = {};
+    _emit = [];
+    _parents = [];
+  }
+
   return {
     on,
     off,
@@ -87,5 +124,6 @@ export default function events(known = []) {
     _parent(ev) {
       _parents.push(ev);
     },
+    clear,
   };
 }

@@ -16,5 +16,8 @@ export default function core(http, events, opts) {
   return {
     upload: upload.upload,
     del: del.del,
+    destroy() {
+      _queue.clear();
+    },
   };
 }
