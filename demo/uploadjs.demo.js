@@ -52,7 +52,7 @@ function log(u) {
 }
 
 // Demos
-var index = 2;
+var index = 1;
 var skip = [7];
 while (true) {
   if (skip.indexOf(index) >= 0) {
@@ -67,11 +67,11 @@ while (true) {
   index++;
 }
 
-// new UploadJs(document.getElementById("upload-demo-7"), {"http": http}).on("upload.progress", function(e) {
-//     $(this).find(".progress").removeClass("p0 p10 p20 p30 p40 p50 p60 p70 p80 p90 p100").addClass("p" + (Math.floor(e.progress / 10) * 10));
-// }).on("upload.done upload.failed", function() {
-//     $(this).find(".progress").addClass("done");
-// })
+new UploadJs(document.getElementById("upload-demo-7"), { "http": http }).on("upload.progress", function(e) {
+  $(this).find(".progress").removeClass("p0 p10 p20 p30 p40 p50 p60 p70 p80 p90 p100").addClass("p" + (Math.floor(e.progress / 10) * 10));
+}).on("upload.done upload.failed", function() {
+  $(this).find(".progress").addClass("done");
+})
 
 function lineSeparator() {
   var div, ta, text;

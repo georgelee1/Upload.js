@@ -163,7 +163,7 @@ var options = {
 <a href="#options-additional-params" name="options-additional-params"></a>
 #### Http Additional Parameters and Headers
 
-It is possible to define additional parameters and headers to be included in the upload and delete http calls. These parameters/headers can be defined statically or can be dynamic. Static definition is done using html `data-upload-additional-param-<key>` or `data-upload-delete-additional-param-<key>` or `data-upload-header-<key>` or `data-upload-delete-header-<key>` attributes or via the javascript options, note that a combination of the two can not be used.
+It is possible to define additional parameters and headers to be included in the upload and delete http calls. These parameters/headers can be defined statically or can be dynamic. Static definition is done using html `data-upload-additional-param-<key>` or `data-upload-delete-additional-param-<key>` or `data-upload-header-<key>` or `data-upload-delete-header-<key>` attributes or via the javascript options, note that when using a combination of the two javascript values with take presendence of the html attributes.
 
 **Html definition**
 ```html

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+
+  <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,297 +10,298 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" />
     <link href="../dist/uploadjs.css" rel="stylesheet" />
     <link href="upload.demo.css" rel="stylesheet" />
-</head>
-<body>
-   <div class="container">
+  </head>
+
+  <body>
+    <div class="container">
       <div class="row">
-         <div class="col-sm-12">
-            <div class="page-header">
-               <h1>UploadJs</h1>
-            </div>
-         </div>
+        <div class="col-sm-12">
+          <div class="page-header">
+            <h1>UploadJs</h1>
+          </div>
+        </div>
       </div>
-      
-      
+
+
       <!-- DEMO 1 -->
       <div class="row">
-         <div class="col-sm-12">
-            <h3>Basic
-               <small>To get started as quickly as possible add the <code>DIV</code> element, find in your script and call <code>UploadJs</code></small>
-            </h3>
-            <ul class="nav nav-tabs">
-               <li class="active"><a href="#upload-demo1-result" data-toggle="tab">Result</a></li>
-               <li><a href="#upload-demo1-html" data-toggle="tab">HTML</a></li>
-               <li><a href="#upload-demo1-js" data-toggle="tab">JS</a></li>
-            </ul>
-         </div>
+        <div class="col-sm-12">
+          <h3>Basic
+            <small>To get started as quickly as possible add the <code>DIV</code> element, find in your script and call <code>UploadJs</code></small>
+          </h3>
+          <ul class="nav nav-tabs">
+            <li class="active"><a href="#upload-demo1-result" data-toggle="tab">Result</a></li>
+            <li><a href="#upload-demo1-html" data-toggle="tab">HTML</a></li>
+            <li><a href="#upload-demo1-js" data-toggle="tab">JS</a></li>
+          </ul>
+        </div>
       </div>
       <div class="row">
-         <div class="col-sm-12">
-            <div class="tab-content">
-               <div class="tab-pane active" id="upload-demo1-result">
-                  <div id="upload-demo-1" data-upload-url="/upload" data-upload-delete-url="/delete"></div>
-               </div>
-               <div class="tab-pane" id="upload-demo1-html">
-                  <div class="copy" title="Copy to clipboard">Copy</div>
-                  <pre class="prettyprint lang-html linenums">
+        <div class="col-sm-12">
+          <div class="tab-content">
+            <div class="tab-pane active" id="upload-demo1-result">
+              <div id="upload-demo-1" data-upload-url="/upload" data-upload-delete-url="/delete"></div>
+            </div>
+            <div class="tab-pane" id="upload-demo1-html">
+              <div class="copy" title="Copy to clipboard">Copy</div>
+              <pre class="prettyprint lang-html linenums">
 &lt;div id="upload-demo-1" data-upload-url="/upload" data-upload-delete-url="/delete"&gt;&lt;/div&gt;
 </pre>
-               </div>
-               <div class="tab-pane" id="upload-demo1-js">
-                  <div class="copy" title="Copy to clipboard">Copy</div>
-                  <pre class="prettyprint lang-js linenums">
+            </div>
+            <div class="tab-pane" id="upload-demo1-js">
+              <div class="copy" title="Copy to clipboard">Copy</div>
+              <pre class="prettyprint lang-js linenums">
 var div = document.getElementById("upload-demo-1");
 new UploadJs(div);
 </pre>
-               </div>
             </div>
-         </div>
+          </div>
+        </div>
       </div>
-      
-      
+
+
       <!-- DEMO 2 -->
       <div class="row">
-         <div class="col-sm-12">
-            <h3>With Existing
-               <small>You can define <code>UploadJS</code> with images already populated.</small>
-            </h3>
-            <ul class="nav nav-tabs">
-               <li class="active"><a href="#upload-demo2-result" data-toggle="tab">Result</a></li>
-               <li><a href="#upload-demo2-html" data-toggle="tab">HTML</a></li>
-               <li><a href="#upload-demo2-js" data-toggle="tab">JS</a></li>
-            </ul>
-         </div>
+        <div class="col-sm-12">
+          <h3>With Existing
+            <small>You can define <code>UploadJS</code> with images already populated.</small>
+          </h3>
+          <ul class="nav nav-tabs">
+            <li class="active"><a href="#upload-demo2-result" data-toggle="tab">Result</a></li>
+            <li><a href="#upload-demo2-html" data-toggle="tab">HTML</a></li>
+            <li><a href="#upload-demo2-js" data-toggle="tab">JS</a></li>
+          </ul>
+        </div>
       </div>
       <div class="row">
-         <div class="col-sm-12">
-            <div class="tab-content">
-               <div class="tab-pane active" id="upload-demo2-result">
-                  <div id="upload-demo-2" data-upload-url="/upload" data-upload-delete-url="/delete">
-                     <img src="existing1.jpg" data-upload-image-id="1" />
-                     <img src="existing2.jpg" data-upload-image-id="2" />
-                  </div>
-               </div>
-               <div class="tab-pane" id="upload-demo2-html">
-                  <div class="copy" title="Copy to clipboard">Copy</div>
-                  <pre class="prettyprint lang-html linenums">
+        <div class="col-sm-12">
+          <div class="tab-content">
+            <div class="tab-pane active" id="upload-demo2-result">
+              <div id="upload-demo-2" data-upload-url="/upload" data-upload-delete-url="/delete">
+                <img src="existing1.jpg" data-upload-image-id="1" />
+                <img src="existing2.jpg" data-upload-image-id="2" />
+              </div>
+            </div>
+            <div class="tab-pane" id="upload-demo2-html">
+              <div class="copy" title="Copy to clipboard">Copy</div>
+              <pre class="prettyprint lang-html linenums">
 &lt;div id="upload-demo-2" data-upload-url="/upload" data-upload-delete-url="/delete"&gt;
     &lt;img src="existing-img-1.jpg" data-upload-image-id="1" /&gt;
     &lt;img src="existing-img-2.jpg" data-upload-image-id="2" /&gt;
 &lt;/div&gt;
 </pre>
-               </div>
-               <div class="tab-pane" id="upload-demo2-js">
-                  <div class="copy" title="Copy to clipboard">Copy</div>
-                  <pre class="prettyprint lang-js linenums">
+            </div>
+            <div class="tab-pane" id="upload-demo2-js">
+              <div class="copy" title="Copy to clipboard">Copy</div>
+              <pre class="prettyprint lang-js linenums">
 var div = document.getElementById("upload-demo-2");
 new UploadJs(div);
 </pre>
-               </div>
             </div>
-         </div>
+          </div>
+        </div>
       </div>
-      
-      
+
+
       <!-- DEMO 3 -->
       <div class="row">
-         <div class="col-sm-12">
-            <h3>Set Maximum
-               <small>You can define <code>UploadJs</code> so that it allows fixed number of images.</small>
-            </h3>
-            <ul class="nav nav-tabs">
-               <li class="active"><a href="#upload-demo3-result" data-toggle="tab">Result</a></li>
-               <li><a href="#upload-demo3-html" data-toggle="tab">HTML</a></li>
-               <li><a href="#upload-demo3-js" data-toggle="tab">JS</a></li>
-            </ul>
-         </div>
+        <div class="col-sm-12">
+          <h3>Set Maximum
+            <small>You can define <code>UploadJs</code> so that it allows fixed number of images.</small>
+          </h3>
+          <ul class="nav nav-tabs">
+            <li class="active"><a href="#upload-demo3-result" data-toggle="tab">Result</a></li>
+            <li><a href="#upload-demo3-html" data-toggle="tab">HTML</a></li>
+            <li><a href="#upload-demo3-js" data-toggle="tab">JS</a></li>
+          </ul>
+        </div>
       </div>
       <div class="row">
-         <div class="col-sm-12">
-            <div class="tab-content">
-               <div class="tab-pane active" id="upload-demo3-result">
-                  <div id="upload-demo-3" data-upload-url="/upload" data-upload-delete-url="/delete" data-upload-max="1"></div>
-               </div>
-               <div class="tab-pane" id="upload-demo3-html">
-                  <div class="copy" title="Copy to clipboard">Copy</div>
-                  <pre class="prettyprint lang-html linenums">
+        <div class="col-sm-12">
+          <div class="tab-content">
+            <div class="tab-pane active" id="upload-demo3-result">
+              <div id="upload-demo-3" data-upload-url="/upload" data-upload-delete-url="/delete" data-upload-max="1"></div>
+            </div>
+            <div class="tab-pane" id="upload-demo3-html">
+              <div class="copy" title="Copy to clipboard">Copy</div>
+              <pre class="prettyprint lang-html linenums">
 &lt;div id="upload-demo-3" data-upload-url="/upload" data-upload-delete-url="/delete" data-upload-max="1"&gt;&lt;/div&gt;
 </pre>
-               </div>
-               <div class="tab-pane" id="upload-demo3-js">
-                  <div class="copy" title="Copy to clipboard">Copy</div>
-                  <pre class="prettyprint lang-js linenums">
+            </div>
+            <div class="tab-pane" id="upload-demo3-js">
+              <div class="copy" title="Copy to clipboard">Copy</div>
+              <pre class="prettyprint lang-js linenums">
 var div = document.getElementById("upload-demo-3");
 new UploadJs(div);
 </pre>
-               </div>
             </div>
-         </div>
+          </div>
+        </div>
       </div>
-      
-      
+
+
       <!-- DEMO 4 -->
       <div class="row">
-         <div class="col-sm-12">
-            <h3>Not deletable
-               <small>You can define <code>UploadJs</code> so that images are not deletable.</small>
-            </h3>
-            <ul class="nav nav-tabs">
-               <li class="active"><a href="#upload-demo4-result" data-toggle="tab">Result</a></li>
-               <li><a href="#upload-demo4-html" data-toggle="tab">HTML</a></li>
-               <li><a href="#upload-demo4-js" data-toggle="tab">JS</a></li>
-            </ul>
-         </div>
+        <div class="col-sm-12">
+          <h3>Not deletable
+            <small>You can define <code>UploadJs</code> so that images are not deletable.</small>
+          </h3>
+          <ul class="nav nav-tabs">
+            <li class="active"><a href="#upload-demo4-result" data-toggle="tab">Result</a></li>
+            <li><a href="#upload-demo4-html" data-toggle="tab">HTML</a></li>
+            <li><a href="#upload-demo4-js" data-toggle="tab">JS</a></li>
+          </ul>
+        </div>
       </div>
       <div class="row">
-         <div class="col-sm-12">
-            <div class="tab-content">
-               <div class="tab-pane active" id="upload-demo4-result">
-                  <div id="upload-demo-4" data-upload-url="/upload" data-upload-deletable="false">
-                     <img src="existing1.jpg" data-upload-image-id="1" />
-                  </div>
-               </div>
-               <div class="tab-pane" id="upload-demo4-html">
-                  <div class="copy" title="Copy to clipboard">Copy</div>
-                  <pre class="prettyprint lang-html linenums">
+        <div class="col-sm-12">
+          <div class="tab-content">
+            <div class="tab-pane active" id="upload-demo4-result">
+              <div id="upload-demo-4" data-upload-url="/upload" data-upload-deletable="false">
+                <img src="existing1.jpg" />
+              </div>
+            </div>
+            <div class="tab-pane" id="upload-demo4-html">
+              <div class="copy" title="Copy to clipboard">Copy</div>
+              <pre class="prettyprint lang-html linenums">
 &lt;div id="upload-demo-4" data-upload-url="/upload" data-upload-deletable="false"&gt;
-    &lt;img src="existing-img-1.jpg" data-upload-image-id="1" /&gt;
+    &lt;img src="existing-img-1.jpg" /&gt;
 &lt;/div&gt;
 </pre>
-               </div>
-               <div class="tab-pane" id="upload-demo4-js">
-                  <div class="copy" title="Copy to clipboard">Copy</div>
-                  <pre class="prettyprint lang-js linenums">
+            </div>
+            <div class="tab-pane" id="upload-demo4-js">
+              <div class="copy" title="Copy to clipboard">Copy</div>
+              <pre class="prettyprint lang-js linenums">
 var div = document.getElementById("upload-demo-4");
 new UploadJs(div);
 </pre>
-               </div>
             </div>
-            <div class="note">
-               <div>You can make individual images not deletable by not defining <code>data-upload-image-id=".."</code> for existing <code>img</code> tags instead of defining <code>data-upload-deletable="false"</code> on the <code>div</code> element</div>
-               <div class="row block">
-                  <div class="col-md-6">
-                     <b>Instead of:</b>
-                     <pre><code>&lt;img src="existing-img-1.jpg" data-upload-image-id="1" /&gt;</code></pre>
-                  </div>
-                  <div class="col-md-6">
-                     <b>Define as:</b>
-                     <pre><code>&lt;img src="existing-img-1.jpg" /&gt;</code></pre>
-                  </div>
-               </div>
-               For images that are uploaded through <code>UploadJs</code> the return JSON should not define the <code>uploadImageId</code> field
-               <div class="row block">
-                  <div class="col-md-6">
-                     <b>Instead of:</b>
-                     <pre><code>{success: "true", uploadImageId: "1"}</code></pre>
-                  </div>
-                  <div class="col-md-6">
-                     <b>Define as:</b>
-                     <pre><code>{success: "true"}</code></pre>
-                  </div>
-               </div>
+          </div>
+          <div class="note">
+            <div>You can make individual images not deletable by not defining <code>data-upload-image-id=".."</code> for existing <code>img</code> tags.</div>
+            <div class="row block">
+              <div class="col-md-6">
+                <b>Instead of:</b>
+                <pre><code>&lt;img src="existing-img-1.jpg" data-upload-image-id="1" /&gt;</code></pre>
+              </div>
+              <div class="col-md-6">
+                <b>Define as:</b>
+                <pre><code>&lt;img src="existing-img-1.jpg" /&gt;</code></pre>
+              </div>
             </div>
-         </div>
+            For images that are uploaded through <code>UploadJs</code> the return JSON should not define the <code>uploadImageId</code> field
+            <div class="row block">
+              <div class="col-md-6">
+                <b>Instead of:</b>
+                <pre><code>{success: "true", uploadImageId: "1"}</code></pre>
+              </div>
+              <div class="col-md-6">
+                <b>Define as:</b>
+                <pre><code>{success: "true"}</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      
-      
+
+
       <!-- DEMO 5&6 -->
       <div class="row">
-         <div class="col-sm-12">
-            <h3>Icons
-               <small>You can change the default icons used for <code>UploadJs</code>. You can either use <a href="http://fortawesome.github.io/Font-Awesome" target="_blank">Font Awesome</a> or <a href="http://glyphicons.com/">Glyphicons</a>.</small>
-            </h3>
-            <ul class="nav nav-tabs">
-               <li class="active"><a href="#upload-demo5-result" data-toggle="tab">Result</a></li>
-               <li><a href="#upload-demo5-html" data-toggle="tab">HTML</a></li>
-               <li><a href="#upload-demo5-js" data-toggle="tab">JS</a></li>
-            </ul>
-         </div>
+        <div class="col-sm-12">
+          <h3>Icons
+            <small>You can change the default icons used for <code>UploadJs</code>. You can either use <a href="http://fortawesome.github.io/Font-Awesome" target="_blank">Font Awesome</a> or <a href="http://glyphicons.com/">Glyphicons</a>.</small>
+          </h3>
+          <ul class="nav nav-tabs">
+            <li class="active"><a href="#upload-demo5-result" data-toggle="tab">Result</a></li>
+            <li><a href="#upload-demo5-html" data-toggle="tab">HTML</a></li>
+            <li><a href="#upload-demo5-js" data-toggle="tab">JS</a></li>
+          </ul>
+        </div>
       </div>
       <div class="row">
-         <div class="col-sm-12">
-            <div class="tab-content">
-               <div class="tab-pane active" id="upload-demo5-result">
-                  <b>Font Awesome:</b>
-                  <div id="upload-demo-5" class="up-fa" data-upload-url="/upload" data-upload-delete-url="/delete"></div>
-                  <b>Glyphicons:</b>
-                  <div id="upload-demo-6" class="up-glyphicons" data-upload-url="/upload" data-upload-delete-url="/delete"></div>
-               </div>
-               <div class="tab-pane" id="upload-demo5-html">
-                  <b>Font Awesome:</b>
-                  <div class="copy" title="Copy to clipboard">Copy</div>
-                  <pre class="prettyprint lang-html linenums">
+        <div class="col-sm-12">
+          <div class="tab-content">
+            <div class="tab-pane active" id="upload-demo5-result">
+              <b>Font Awesome:</b>
+              <div id="upload-demo-5" class="up-fa" data-upload-url="/upload" data-upload-delete-url="/delete"></div>
+              <b>Glyphicons:</b>
+              <div id="upload-demo-6" class="up-glyphicons" data-upload-url="/upload" data-upload-delete-url="/delete"></div>
+            </div>
+            <div class="tab-pane" id="upload-demo5-html">
+              <b>Font Awesome:</b>
+              <div class="copy" title="Copy to clipboard">Copy</div>
+              <pre class="prettyprint lang-html linenums">
 &lt;div id="upload-demo-5" class="up-fa" data-upload-url="/upload" data-upload-delete-url="/delete"&gt;&lt;/div&gt;
 </pre>
-                  <b>Glyphicons:</b>
-                  <div class="copy" title="Copy to clipboard">Copy</div>
-                  <pre class="prettyprint lang-html linenums">
+              <b>Glyphicons:</b>
+              <div class="copy" title="Copy to clipboard">Copy</div>
+              <pre class="prettyprint lang-html linenums">
 &lt;div id="upload-demo-6" class="up-glyphicons" data-upload-url="/upload" data-upload-delete-url="/delete"&gt;&lt;/div&gt;
 </pre>
-               </div>
-               <div class="tab-pane" id="upload-demo5-js">
-                  <div class="copy" title="Copy to clipboard">Copy</div>
-                  <pre class="prettyprint lang-js linenums">
+            </div>
+            <div class="tab-pane" id="upload-demo5-js">
+              <div class="copy" title="Copy to clipboard">Copy</div>
+              <pre class="prettyprint lang-js linenums">
 var div = document.getElementById("upload-demo-5");
 new UploadJs(div);
 
 var div = document.getElementById("upload-demo-6");
 new UploadJs(div);
 </pre>
-               </div>
             </div>
-         </div>
+          </div>
+        </div>
       </div>
-      
-      
+
+
       <!-- DEMO 7&8 -->
       <div class="row uploadjs-demo7">
-         <div class="col-sm-12">
-            <h3>Styling
-               <small>It is possible to style the stuffing out of <code>UploadJs</code>, here are some examples of what is possible.</small>
-            </h3>
-         </div>
+        <div class="col-sm-12">
+          <h3>Styling
+            <small>It is possible to style the stuffing out of <code>UploadJs</code>, here are some examples of what is possible.</small>
+          </h3>
+        </div>
       </div>
       <div class="row uploadjs-demo7">
-         <div class="col-sm-12">
-            <em>In this example, the add action is fixed to the right side, the file items are circular as is the progress bar and the default colour has been changed to a dark red.</em>
-            <ul class="nav nav-tabs">
-               <li class="active"><a href="#upload-demo7-result" data-toggle="tab">Result</a></li>
-               <li><a href="#upload-demo7-html" data-toggle="tab">HTML</a></li>
-               <li><a href="#upload-demo7-js" data-toggle="tab">JS</a></li>
-               <li><a href="#upload-demo7-css" data-toggle="tab">CSS</a></li>
-            </ul>
-         </div>
+        <div class="col-sm-12">
+          <em>In this example, the add action is fixed to the right side, the file items are circular as is the progress bar and the default colour has been changed to a dark red.</em>
+          <ul class="nav nav-tabs">
+            <li class="active"><a href="#upload-demo7-result" data-toggle="tab">Result</a></li>
+            <li><a href="#upload-demo7-html" data-toggle="tab">HTML</a></li>
+            <li><a href="#upload-demo7-js" data-toggle="tab">JS</a></li>
+            <li><a href="#upload-demo7-css" data-toggle="tab">CSS</a></li>
+          </ul>
+        </div>
       </div>
       <div class="row">
-         <div class="col-sm-12">
-            <div class="tab-content">
-               <div class="tab-pane active" id="upload-demo7-result">
-                  <div id="upload-demo-7" class="demo7" data-upload-url="/upload" data-upload-delete-url="/delete">
-                     <img src="existing1.jpg" data-upload-image-id="1" />
-                  </div>
-               </div>
-               <div class="tab-pane" id="upload-demo7-html">
-                  <div class="copy" title="Copy to clipboard">Copy</div>
-                  <pre class="prettyprint lang-html linenums">
+        <div class="col-sm-12">
+          <div class="tab-content">
+            <div class="tab-pane active" id="upload-demo7-result">
+              <div id="upload-demo-7" class="demo7" data-upload-url="/upload" data-upload-delete-url="/delete">
+                <img src="existing1.jpg" data-upload-image-id="1" />
+              </div>
+            </div>
+            <div class="tab-pane" id="upload-demo7-html">
+              <div class="copy" title="Copy to clipboard">Copy</div>
+              <pre class="prettyprint lang-html linenums">
 &lt;div id="upload-demo-7" class="demo7" data-upload-url="/upload" data-upload-delete-url="/delete"&gt;
     &lt;img src="existing-img-1.jpg" data-upload-image-id="1" /&gt;
 &lt;/div&gt;
 </pre>
-               </div>
-               <div class="tab-pane" id="upload-demo7-js">
-                  <div class="copy" title="Copy to clipboard">Copy</div>
-                  <pre class="prettyprint lang-js linenums">
+            </div>
+            <div class="tab-pane" id="upload-demo7-js">
+              <div class="copy" title="Copy to clipboard">Copy</div>
+              <pre class="prettyprint lang-js linenums">
 new UploadJs(document.getElementById("upload-demo-7"), {"http": http}).on("upload.progress", function(e) {
     $(this).find(".progress").removeClass("p0 p10 p20 p30 p40 p50 p60 p70 p80 p90 p100").addClass("p" + (Math.floor(e.progress / 10) * 10));
 }).on("upload.done upload.failed", function() {
     $(this).find(".progress").addClass("done");
 })
 </pre>
-               </div>
-               <div class="tab-pane" id="upload-demo7-css">
-                  <div class="copy" title="Copy to clipboard">Copy</div>
-                  <pre class="prettyprint lang-css linenums">
+            </div>
+            <div class="tab-pane" id="upload-demo7-css">
+              <div class="copy" title="Copy to clipboard">Copy</div>
+              <pre class="prettyprint lang-css linenums">
 .uploadjs.demo7 {
    min-height: 100px;
    position: relative;
@@ -424,47 +426,47 @@ new UploadJs(document.getElementById("upload-demo-7"), {"http": http}).on("uploa
    transform: rotate(360deg) !important;
 }
 </pre>
-               </div>
             </div>
-         </div>
+          </div>
+        </div>
       </div>
       <div class="row uploadjs-demo7">
-         <div class="col-sm-12">
-            <em>In this example, the file items sizes have been increased and the add action styled to be a bottom floating bar.</em>
-            <ul class="nav nav-tabs">
-               <li class="active"><a href="#upload-demo8-result" data-toggle="tab">Result</a></li>
-               <li><a href="#upload-demo8-html" data-toggle="tab">HTML</a></li>
-               <li><a href="#upload-demo8-js" data-toggle="tab">JS</a></li>
-               <li><a href="#upload-demo8-css" data-toggle="tab">CSS</a></li>
-            </ul>
-         </div>
+        <div class="col-sm-12">
+          <em>In this example, the file items sizes have been increased and the add action styled to be a bottom floating bar.</em>
+          <ul class="nav nav-tabs">
+            <li class="active"><a href="#upload-demo8-result" data-toggle="tab">Result</a></li>
+            <li><a href="#upload-demo8-html" data-toggle="tab">HTML</a></li>
+            <li><a href="#upload-demo8-js" data-toggle="tab">JS</a></li>
+            <li><a href="#upload-demo8-css" data-toggle="tab">CSS</a></li>
+          </ul>
+        </div>
       </div>
       <div class="row">
-         <div class="col-sm-12">
-            <div class="tab-content">
-               <div class="tab-pane active" id="upload-demo8-result">
-                  <div id="upload-demo-8" class="demo8" data-upload-url="/upload" data-upload-delete-url="/delete">
-                     <img src="existing1.jpg" data-upload-image-id="1" />
-                  </div>
-               </div>
-               <div class="tab-pane" id="upload-demo8-html">
-                  <div class="copy" title="Copy to clipboard">Copy</div>
-                  <pre class="prettyprint lang-html linenums">
+        <div class="col-sm-12">
+          <div class="tab-content">
+            <div class="tab-pane active" id="upload-demo8-result">
+              <div id="upload-demo-8" class="demo8" data-upload-url="/upload" data-upload-delete-url="/delete">
+                <img src="existing1.jpg" data-upload-image-id="1" />
+              </div>
+            </div>
+            <div class="tab-pane" id="upload-demo8-html">
+              <div class="copy" title="Copy to clipboard">Copy</div>
+              <pre class="prettyprint lang-html linenums">
 &lt;div id="upload-demo-8" class="demo8" data-upload-url="/upload" data-upload-delete-url="/delete"&gt;
     &lt;img src="existing-img-1.jpg" data-upload-image-id="1" /&gt;
 &lt;/div&gt;
 </pre>
-               </div>
-               <div class="tab-pane" id="upload-demo8-js">
-                  <div class="copy" title="Copy to clipboard">Copy</div>
-                  <pre class="prettyprint lang-js linenums">
+            </div>
+            <div class="tab-pane" id="upload-demo8-js">
+              <div class="copy" title="Copy to clipboard">Copy</div>
+              <pre class="prettyprint lang-js linenums">
 var div = document.getElementById("upload-demo-8");
 new UploadJs(div);
 </pre>
-               </div>
-               <div class="tab-pane" id="upload-demo8-css">
-                  <div class="copy" title="Copy to clipboard">Copy</div>
-                  <pre class="prettyprint lang-css linenums">
+            </div>
+            <div class="tab-pane" id="upload-demo8-css">
+              <div class="copy" title="Copy to clipboard">Copy</div>
+              <pre class="prettyprint lang-css linenums">
 .uploadjs.demo8 .item {
    width: 200px;
    height: 200px;
@@ -482,19 +484,20 @@ new UploadJs(div);
    height: 30px;
 }
 </pre>
-               </div>
             </div>
-         </div>
+          </div>
+        </div>
       </div>
-      
-      
-   </div>
-   
-   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-   <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
-   <script src="https://cdn.rawgit.com/zenorocha/clipboard.js/v1.5.3/dist/clipboard.min.js"></script>
-   <script src="../dist/uploadjs.js"></script>
-   <script src="uploadjs.demo.js"></script>
-</body>
+
+
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+    <script src="https://cdn.rawgit.com/zenorocha/clipboard.js/v1.5.3/dist/clipboard.min.js"></script>
+    <script src="../dist/uploadjs.js"></script>
+    <script src="uploadjs.demo.js"></script>
+  </body>
+
 </html>
