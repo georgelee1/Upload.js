@@ -19,8 +19,12 @@ export default function fileUpload(http, events, opts, queue) {
 
         http(url, params, headers)
           .progress(progress => events.trigger('upload.progress', { file, id, progress }))
-          .done(({ uploadImageId }) => {
-            events.trigger('upload.done', { file, id, uploadImageId });
+          .done(({ success, uploadImageId }) => {
+            if (success === true || success === 'true') {
+              events.trigger('upload.done', { file, id, uploadImageId });
+            } else {
+              events.trigger('upload.failed', { file, id });
+            }
             done();
           })
           .fail(() => {

@@ -69,22 +69,28 @@ export default function http(url, params = {}, headers = {}) {
    * @private
    */
   function _post() {
+    let uploading = false;
     const data = new FormData();
+    const form = [];
     Object.keys(params).forEach((key) => {
       const val = params[key];
       if (Array.isArray(val)) {
         val.forEach(v => {
           if (v.type && v.name) {
+            uploading = true;
             data.append(key, v, v.name);
           } else {
             data.append(key, v);
+            form.push([key, v]);
           }
         });
       } else {
         if (val.type && val.name) {
+          uploading = true;
           data.append(key, val, val.name);
         } else {
           data.append(key, val);
+          form.push([key, val]);
         }
       }
     });
@@ -114,7 +120,14 @@ export default function http(url, params = {}, headers = {}) {
         request.setRequestHeader(key, headers[key]);
       });
     }
-    request.send(data);
+    if (!uploading) {
+      request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+      request.send(form
+        .map(([key, val]) => `${encodeURIComponent(key)}=${encodeURIComponent(val)}`)
+        .join('&'));
+    } else {
+      request.send(data);
+    }
   }
 
   _instance.progress = progress;

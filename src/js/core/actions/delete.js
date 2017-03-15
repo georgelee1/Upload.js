@@ -14,8 +14,12 @@ export default function fileDelete(http, events, opts, queue) {
         });
 
         http(url, params, headers)
-          .done(() => {
-            events.trigger('delete.done', { id });
+          .done(({ success }) => {
+            if (success === true || success === 'true') {
+              events.trigger('delete.done', { id });
+            } else {
+              events.trigger('delete.failed', { id });
+            }
             done();
           })
           .fail(() => {
