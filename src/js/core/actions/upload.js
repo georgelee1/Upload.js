@@ -10,6 +10,7 @@ export default function fileUpload(http, events, opts, queue) {
    * @private
    */
   function _peformUpload(file, id, done) {
+    events.trigger('upload.started', { file, id });
     opts.get('upload.url', 'upload.param', 'upload.additionalParams', 'upload.headers',
       (url, param, additionalParams, headers) => {
         const params = Object.assign({}, additionalParams, {
@@ -36,7 +37,7 @@ export default function fileUpload(http, events, opts, queue) {
     files.forEach(({ file, id }) => {
       _types.isAllowed(file.type, (allowed) => {
         if (allowed) {
-          events.trigger('upload.started', { file, id });
+          events.trigger('upload.added', { file, id });
           queue.offer((done) => _peformUpload(file, id, done));
         } else {
           events.trigger('upload.rejected', { file, id, rejected: 'type' });

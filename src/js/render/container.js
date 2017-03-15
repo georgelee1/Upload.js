@@ -1,5 +1,5 @@
-import { addClass, append, make, on, data } from '../util/dom';
-import item, { TYPE_IMAGE } from '../item';
+import { addClass, append, make, on, data } from './dom';
+import item, { TYPE_IMAGE } from './item';
 
 function makeAdd() {
   const ele = make('div', { class: 'item new' });
@@ -39,7 +39,7 @@ export default function container(ele, items, events) {
   append(_actions, _add);
   append(ele, makePicker(_add, events));
 
-  events.on('upload.started', ({ file, id }) => {
+  events.on('upload.added', ({ file, id }) => {
     const i = item({ type: TYPE_IMAGE, fileId: id, file, events });
     append(_items, i);
   });

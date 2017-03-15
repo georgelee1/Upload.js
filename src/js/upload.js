@@ -19,9 +19,15 @@ import defaults from './defaults';
 window.UploadJs = class UploadJs {
   constructor(ele, opts = {}) {
     const _events = events([
+      'upload.added',
       'upload.started',
       'upload.progress',
       'upload.done',
+      'upload.failed',
+      'delete.added',
+      'delete.started',
+      'delete.done',
+      'delete.failed',
     ]);
     const _uiEvents = events([
       'file.picked',
@@ -34,5 +40,6 @@ window.UploadJs = class UploadJs {
     const _core = core(http, _events, _opts);
 
     _uiEvents.on('file.picked', ev => _core.upload(ev));
+    _uiEvents.on('file.delete', ev => _core.del(ev.id));
   }
 };

@@ -1,6 +1,6 @@
-import { children, empty, attrs } from '../util/dom';
-import item, { TYPE_IMAGE } from '../item';
-import container from '../container';
+import { children, empty, attrs } from './dom';
+import item, { TYPE_IMAGE } from './item';
+import container from './container';
 
 function parseImage(ele, events) {
   return item(

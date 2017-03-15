@@ -25,7 +25,7 @@ gulp.task('script', () =>
   .on('error', errored)
   .pipe(source('uploadjs.js'))
   .pipe(buffer())
-  .pipe(uglify())
+  // .pipe(uglify())
   .pipe(header(fileHeader, p))
   .pipe(gulp.dest('dist'))
 );

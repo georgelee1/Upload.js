@@ -56,34 +56,39 @@ describe('fileUpload', () => {
       event.should.be.eql({
         type: 'upload.done',
         file,
-        id: '111',
+        id: 222,
+        uploadImageId: '111',
       });
 
       mockListener.callCount.should.be.equal(4);
       mockListener.getCall(1).args.should.be.eql([{
         type: 'upload.progress',
         file,
+        id: 222,
         progress: 10,
       }]);
       mockListener.getCall(2).args.should.be.eql([{
         type: 'upload.progress',
         file,
+        id: 222,
         progress: 60,
       }]);
       mockListener.getCall(3).args.should.be.eql([{
         type: 'upload.progress',
         file,
+        id: 222,
         progress: 100,
       }]);
 
       done();
     });
 
-    up.upload(file);
+    up.upload({ file, id: 222 });
 
     mockListener.calledOnce.should.be.True();
     mockListener.firstCall.args.should.be.eql([{
       type: 'upload.started',
+      id: 222,
       file,
     }]);
 
@@ -115,6 +120,7 @@ describe('fileUpload', () => {
     ev.on('upload.failed', (event) => {
       event.should.be.eql({
         type: 'upload.failed',
+        id: 333,
         file,
       });
 
@@ -122,17 +128,19 @@ describe('fileUpload', () => {
       mockListener.getCall(1).args.should.be.eql([{
         type: 'upload.progress',
         file,
+        id: 333,
         progress: 10,
       }]);
 
       done();
     });
 
-    up.upload(file);
+    up.upload({ file, id: 333 });
 
     mockListener.calledOnce.should.be.True();
     mockListener.firstCall.args.should.be.eql([{
       type: 'upload.started',
+      id: 333,
       file,
     }]);
 
@@ -154,12 +162,13 @@ describe('fileUpload', () => {
     ev.on('upload.done', mockListener);
     ev.on('upload.failed', mockListener);
 
-    up.upload(file);
+    up.upload({ file, id: 444 });
 
     mockListener.calledOnce.should.be.True();
     mockListener.firstCall.args.should.be.eql([{
       type: 'upload.rejected',
       file,
+      id: 444,
       rejected: 'type',
     }]);
 

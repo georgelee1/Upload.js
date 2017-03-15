@@ -11,7 +11,7 @@ import {
   on,
   set,
   data,
-} from '../../../src/js/render/util/dom';
+} from '../../../src/js/render/dom';
 
 describe('Dom', () => {
   describe('#children', () => {

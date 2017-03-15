@@ -89,4 +89,23 @@ describe('events', () => {
       [0, { type: 'test', file: 'one' }],
     ]);
   });
+
+  it('should not trigger events listeners that have stopped listening', () => {
+    const results = [];
+    e.on('test', (event) => {
+      results.push([0, event]);
+    });
+    e.on('test', 1, (event) => {
+      results.push([1, event]);
+    });
+    e.on('test', 1, (event) => {
+      results.push([2, event]);
+    });
+    e.off('test', 1);
+    e.trigger('test', { file: 'one' });
+
+    results.should.be.eql([
+      [0, { type: 'test', file: 'one' }],
+    ]);
+  });
 });
