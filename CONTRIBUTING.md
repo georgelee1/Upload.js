@@ -41,9 +41,10 @@ Follow these steps from start to PR:
 
 * Fork `UploadJs`
 * Create a branch (`git checkout -b <branch_name> origin/master`).
+* Install dependencies (`yarn install`).
 * The fun part... code, code, code
-* The important part... test. Make sure that existing tests pass (`npm run test`). **Your work must also include appropriate test coverage for your new code**.
-* Commit your changes (`git commit -a`). Ensure your commit message references the issue you are working on (`git commit -a -m "#<issue> My commit message"`)
+* The important part... test, test, test. Make sure that existing tests pass (`yarn test`). **Your work must also include appropriate test coverage for your new code**.
+* Commit your changes. Ensure your commit message references the issue you are working on (`git commit -a -m "#<issue> My commit message"`)
 * Push (`git push origin <branch_name>`)
 * In GitHub create a Pull Request to `uploadjs:master`
 
