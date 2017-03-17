@@ -28,8 +28,8 @@ export default function queue(handler, options = {}) {
   const _concurrency = Math.max(options.concurrency, 1) || 1;
   const _delay = Math.max(options.delay, 0) || 0;
   const _size = Math.max(options.size, 0) || 0;
-  const _queue = [];
-  const _working = [];
+  let _queue = [];
+  let _working = [];
   let _id = 0;
 
   /**
@@ -73,7 +73,16 @@ export default function queue(handler, options = {}) {
     return false;
   }
 
+  /**
+   * Empties the queue
+   */
+  function clear() {
+    _queue = [];
+    _working = [];
+  }
+
   return {
     offer,
+    clear,
   };
 }

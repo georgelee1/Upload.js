@@ -147,6 +147,13 @@ export function on(ele, event, handler) {
 }
 
 /**
+ * Remove event listener from the passed element.
+ */
+export function off(ele, event, handler) {
+  ele.removeEventListener(ele, event, handler);
+}
+
+/**
  * Sets the value on the object using the path. Grows the object deep until the end of the path is
  * reached.
  */

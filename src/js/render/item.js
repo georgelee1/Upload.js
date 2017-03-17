@@ -1,4 +1,4 @@
-import { make, append, marker, replaceMarker, addClass, removeClass, on } from './dom';
+import { make, append, marker, replaceMarker, addClass, removeClass, on, off } from './dom';
 
 export const TYPE_IMAGE = 'image';
 
@@ -112,6 +112,7 @@ function remove(ele, data) {
 
   removeUploadEvents(data);
   removeDeleteEvents(data);
+  data.events.off('destroy', data.id);
 }
 
 /**
@@ -142,6 +143,11 @@ function onDelete(ele, data) {
       status(ele, 'error');
     }, 500);
   });
+
+  if (data.fileId) {
+    data.events.off('destroy', data.fileId);
+  }
+  data.events.on('destroy', data.id, data._onDestroy);
 }
 
 /**
@@ -155,10 +161,17 @@ function makeActions(ele, data) {
     append(del, make('div', { class: 'trash' }));
     replaceMarker(ele, 'actions', actions);
 
-    on(del, 'click', () => data.events.trigger('file.delete', { id: data.id }));
+    const onDeleteClick = () => data.events.trigger('file.delete', { id: data.id });
+    on(del, 'click', onDeleteClick);
+
+    data.onDestroyEvents.push(() => {
+      off(del, 'click', onDeleteClick);
+    });
+
     onDelete(ele, data);
   } else {
     addClass(ele, 'static');
+    data.events.on('destroy', data._onDestroy);
   }
 }
 
@@ -186,13 +199,25 @@ function onUpload(ele, progressEle, data) {
       remove(ele, data);
     });
   });
+
+  data.events.on('destroy', data.fileId, data._onDestroy);
 }
 
 /**
  * The item module is a wrapper around an item in the container that the user can interact with.
  */
 export default function item(data) {
+  data.onDestroyEvents = [];
   const _wrapper = wrap((renderers[data.type] || renderers.NOOP)(data));
+
+  data.onDestroyEvents.push(() => {
+    _wrapper.ele.parentNode.removeChild(_wrapper.ele);
+    _wrapper.ele = undefined;
+  });
+  data._onDestroy = () => {
+    data.onDestroyEvents.forEach(d => d());
+    data.onDestroyEvents = [];
+  };
 
   if (data.fileId) {
     onUpload(_wrapper.ele, _wrapper._progress, data);

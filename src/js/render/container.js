@@ -1,4 +1,4 @@
-import { addClass, removeClass, append, make, on, data } from './dom';
+import { addClass, removeClass, append, make, on, off, data } from './dom';
 import item, { TYPE_IMAGE } from './item';
 import options from '../core/util/options';
 import merge from '../core/util/merge';
@@ -21,7 +21,14 @@ function makePicker(trigger, events, state, max) {
       events.trigger('file.picked', { file: ele.files.item(x), id: `${x}_${id}` });
     }
   });
-  on(trigger, 'click', ele.click.bind(ele));
+
+  const onClick = () => ele.click();
+  on(trigger, 'click', onClick);
+
+  events.on('destroy', () => {
+    off(trigger, 'click', onClick);
+  });
+
   return ele;
 }
 
@@ -77,6 +84,10 @@ export default function container(ele, items, events, defaultOpt, opts) {
     events.on('item.removed', hideShowAdd.bind(null, -1));
 
     items.splice(0, items.length);
+  });
+
+  events.on('destroy', () => {
+    ele.parentNode.removeChild(ele);
   });
 
   return _opts;

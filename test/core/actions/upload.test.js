@@ -48,12 +48,12 @@ describe('fileUpload', () => {
     };
 
     const mockListener = sinon.spy();
-    ev.on('upload.added', mockListener);
-    ev.on('upload.started', mockListener);
-    ev.on('upload.rejected', mockListener);
-    ev.on('upload.progress', mockListener);
-    ev.on('upload.fail', mockListener);
-    ev.on('upload.done', (event) => {
+    ev.on('upload.added', 222, mockListener);
+    ev.on('upload.started', 222, mockListener);
+    ev.on('upload.rejected', 222, mockListener);
+    ev.on('upload.progress', 222, mockListener);
+    ev.on('upload.fail', 222, mockListener);
+    ev.on('upload.done', 222, (event) => {
       event.should.be.eql({
         type: 'upload.done',
         file,
@@ -121,12 +121,12 @@ describe('fileUpload', () => {
       };
 
       const mockListener = sinon.spy();
-      ev.on('upload.added', mockListener);
-      ev.on('upload.started', mockListener);
-      ev.on('upload.rejected', mockListener);
-      ev.on('upload.progress', mockListener);
-      ev.on('upload.done', mockListener);
-      ev.on('upload.failed', (event) => {
+      ev.on('upload.added', 333, mockListener);
+      ev.on('upload.started', 333, mockListener);
+      ev.on('upload.rejected', 333, mockListener);
+      ev.on('upload.progress', 333, mockListener);
+      ev.on('upload.done', 333, mockListener);
+      ev.on('upload.failed', 333, (event) => {
         event.should.be.eql({
           type: 'upload.failed',
           id: 333,
@@ -177,12 +177,12 @@ describe('fileUpload', () => {
     };
 
     const mockListener = sinon.spy();
-    ev.on('upload.added', mockListener);
-    ev.on('upload.started', mockListener);
-    ev.on('upload.rejected', mockListener);
-    ev.on('upload.progress', mockListener);
-    ev.on('upload.done', mockListener);
-    ev.on('upload.failed', (event) => {
+    ev.on('upload.added', 333, mockListener);
+    ev.on('upload.started', 333, mockListener);
+    ev.on('upload.rejected', 333, mockListener);
+    ev.on('upload.progress', 333, mockListener);
+    ev.on('upload.done', 333, mockListener);
+    ev.on('upload.failed', 333, (event) => {
       event.should.be.eql({
         type: 'upload.failed',
         id: 333,
@@ -226,12 +226,12 @@ describe('fileUpload', () => {
     };
 
     const mockListener = sinon.spy();
-    ev.on('upload.added', mockListener);
-    ev.on('upload.started', mockListener);
-    ev.on('upload.rejected', mockListener);
-    ev.on('upload.progress', mockListener);
-    ev.on('upload.done', mockListener);
-    ev.on('upload.failed', mockListener);
+    ev.on('upload.added', 444, mockListener);
+    ev.on('upload.started', 444, mockListener);
+    ev.on('upload.rejected', 444, mockListener);
+    ev.on('upload.progress', 444, mockListener);
+    ev.on('upload.done', 444, mockListener);
+    ev.on('upload.failed', 444, mockListener);
 
     up.upload({ file, id: 444 });
 
